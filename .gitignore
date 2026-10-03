@@ -6,6 +6,8 @@
 
 # testing
 /coverage
+__pycache__/
+*.py[cod]
 
 # next.js
 /.next/
@@ -34,5 +36,10 @@ next-env.d.ts
 # prisma
 prisma/migrations/
 
+# generated assets (run "pnpm assets:wasm" / built automatically on dev & build)
+/public/wasm
+/public/draco
+
 # vercel
 .vercel
+.neon

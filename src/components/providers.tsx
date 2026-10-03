@@ -2,13 +2,22 @@
 
 import { ReactNode } from "react"
 import { QueryProvider } from "@/components/query-provider"
+import { AuthProvider } from "@/components/auth-provider"
+import { I18nProvider } from "@/lib/i18n"
+import { silenceThreeClockDeprecation } from "@/lib/three-deprecations"
 import { Toaster } from "sileo"
+
+silenceThreeClockDeprecation()
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (
-    <QueryProvider>
-      {children}
-      <Toaster position="bottom-right" />
-    </QueryProvider>
+    <I18nProvider>
+      <AuthProvider>
+        <QueryProvider>
+          {children}
+          <Toaster position="top-right" />
+        </QueryProvider>
+      </AuthProvider>
+    </I18nProvider>
   )
 }

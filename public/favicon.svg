@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Afrodita</title>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="14" fill="#F8F5F0"/>
+  <rect x="2" y="2" width="60" height="60" rx="13.5" fill="none" stroke="#C9B99A" stroke-width="1.5"/>
+  <text x="32" y="49" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="47" fill="#1A1A1A">A</text>
+  <path d="M47 11.5 51.5 16 47 20.5 42.5 16z" fill="#C9B99A"/>
+</svg>

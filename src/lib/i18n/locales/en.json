@@ -1,0 +1,251 @@
+{
+  "meta": {
+    "title": "Afrodita - Your AI Stylist"
+  },
+  "nav": {
+    "menu": "Menu",
+    "login": "Log In",
+    "register": "Sign Up",
+    "dashboard": "My Closet",
+    "logout": "Log out",
+    "closet": "My Closet",
+    "stylist": "Stylist"
+  },
+  "landing": {
+    "hero": {
+      "eyebrow": "Stylish and Practical",
+      "title1": "What",
+      "title2": "to wear",
+      "description": "Choose the latest trends from your own closet. Our AI stylist analyzes your wardrobe and creates perfect outfits for every occasion.",
+      "cta": "Create Your Closet",
+      "ctaAuthenticated": "Go to my closet",
+      "yourStyle": "Your Style",
+      "aiPowered": "AI-Powered Styling",
+      "outfitsFromCloset": "Outfits from Your Closet",
+      "fromYourWardrobe": "From Your Wardrobe"
+    },
+    "features": {
+      "title": "How it works",
+      "step1": {
+        "number": "01",
+        "title": "Upload Your Closet",
+        "description": "Add photos of your clothes, shoes, and accessories. Organize by category, color, and season."
+      },
+      "step2": {
+        "number": "02",
+        "title": "Describe Your Look",
+        "description": "Tell our AI what you need: casual dinner? Professional meeting? The AI understands context."
+      },
+      "step3": {
+        "number": "03",
+        "title": "See It On You",
+        "description": "Try each outfit live with your camera before deciding."
+      }
+    },
+    "why": {
+      "eyebrow": "Why Afrodita",
+      "title1": "Fashion meets",
+      "title2": "intelligence",
+      "description": "We combine artificial intelligence with personal styling to help you make the most of what you already own.",
+      "features": {
+        "uses_what": "Uses What You Have",
+        "uses_what_desc": "No new purchases. Works exclusively with your existing wardrobe.",
+        "ai_fashion": "AI That Understands Fashion",
+        "ai_fashion_desc": "Considers occasion, style, weather, and current trends.",
+        "options": "3 Options to Choose",
+        "options_desc": "Multiple looks so you can pick the one you love most.",
+        "tryon_live": "Try it live with your camera",
+        "tryon_live_desc": "The AR virtual try-on shows every look on your body in real time — no photos or avatars needed."
+      }
+    },
+    "cta": {
+      "eyebrow": "Start Now",
+      "title1": "Stop wasting time",
+      "title2": "in front of your closet",
+      "description": "Upload your clothes today and have your first outfit ready in 5 minutes.",
+      "button": "Get Started",
+      "buttonAuthenticated": "Go to my closet"
+    },
+    "footer": {
+      "copyright": "Your closet, your style."
+    }
+  },
+  "auth": {
+    "login": "Log In",
+    "register": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Name",
+    "welcomeBack": "Welcome back",
+    "createAccount": "Create your account",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "error": "An error occurred. Please try again.",
+    "invalidCredentials": "Invalid credentials",
+    "emailNotVerified": "You need to verify your email",
+    "emailExists": "This email is already registered",
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "sessionRequired": "You need to log in to access this page.",
+    "registrationFailed": "Registration failed",
+    "accountCreated": "Account created successfully",
+    "yourName": "Your name",
+    "passwordRules": {
+      "length": "At least 8 characters",
+      "uppercase": "One uppercase letter",
+      "lowercase": "One lowercase letter",
+      "number": "One number",
+      "special": "One special character (!@#$%^&*)",
+      "confirm": "Passwords match"
+    },
+    "passwordRequirements": "Password requirements",
+    "passwordStrong": "Strong password"
+  },
+  "wardrobe": {
+    "title": "My Closet",
+    "subtitle": "{count} piece{plural} in your collection",
+    "add": "Add Piece",
+    "search": "Search by name, color, or brand...",
+    "filter": "All Categories",
+    "empty": "Your closet is empty. Add your first piece.",
+    "emptyFiltered": "No pieces found with those filters.",
+    "form": {
+      "new": "New Piece",
+      "edit": "Edit Piece",
+      "name": "Name",
+      "namePlaceholder": "E.g., Blue linen shirt",
+      "category": "Category",
+      "color": "Color",
+      "material": "Material",
+      "materialPlaceholder": "E.g., Cotton, Polyester, Leather...",
+      "brand": "Brand",
+      "brandPlaceholder": "E.g., Zara, H&M, Nike...",
+      "season": "Season",
+      "imageUrl": "Image",
+      "dragDrop": "Drag and drop your image here",
+      "orClick": "or click to select",
+      "uploading": "Uploading image...",
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "add": "Add Piece"
+    },
+    "model3dGenerated": "3D model generated",
+    "model3dGenerating": "Generating 3D model in the background...",
+    "model3dFailed": "Could not generate the 3D model. Try again later.",
+    "model3dCredits": "Tripo API has no credits. Studio credits don't apply — top up at developers.tripo3d.ai",
+    "generating3d": "Generating 3D model",
+    "generate3d": "Generate 3D model",
+    "preview3d": "Preview 3D model",
+    "preview3dTitle": "3D Preview",
+    "preview3dClose": "Close preview",
+    "preview3dHint": "Drag to rotate",
+    "model3dLoading": "Loading 3D model...",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteTitle": "Delete garment",
+    "deleteDescription": "Are you sure you want to delete “{name}”? This action cannot be undone.",
+    "deleteConfirm": "Yes, delete",
+    "deleteCancel": "Cancel",
+    "loadCollection": "Load collection",
+    "collectionLoaded": "{count} collection pieces loaded",
+    "collectionAlreadyLoaded": "The collection is already loaded",
+    "collectionError": "Error loading the collection"
+  },
+  "chat": {
+    "title": "Your Personal Stylist",
+    "aiAssistant": "AI Assistant",
+    "subtitle": "Tell me what you're dressing for and I'll help you find the perfect look",
+    "placeholder": "Type your message...",
+    "generating": "Analyzing your closet...",
+    "thinking": "Thinking about your style...",
+    "welcome": "Hi there! I'm your personal stylist. 👋 I'd love to help you find the perfect look. What are you dressing for today?",
+    "personalStylist": "Personal Stylist",
+    "try": "Try:",
+    "generated": "Outfit Generated",
+    "optionsAvailable": "options available",
+    "quickPrompts": {
+      "hello": "Hi!",
+      "whatToWear": "What should I wear today?",
+      "help": "Help me pick a look",
+      "casual": "Something casual to go out",
+      "work": "For work",
+      "gym": "For the gym",
+      "date": "For a date"
+    },
+    "tryOnLive": "Try it on live",
+    "threeOptionsNeeded": "You need 3 generated options to open the fitting room."
+  },
+  "preview": {
+    "title": "Your Outfits",
+    "subtitle": "Select an option to see how it looks on you",
+    "regenerate": "Regenerate",
+    "selectedLook": "Selected Look",
+    "option": "Option {number}",
+    "includedPieces": "Included Pieces",
+    "saveLook": "Save Look",
+    "useOutfit": "Use This Outfit",
+    "arPreview": "Live Try-On",
+    "arHint": "Stand in front of the camera to see the look on your body",
+    "locked": {
+      "title": "No generated looks yet",
+      "description": "The AI stylist needs to generate 3 outfit options before you can try them on live with your camera.",
+      "cta": "Go to the stylist"
+    }
+  },
+  "categories": {
+    "camisa": "Shirt",
+    "pantalon": "Pants",
+    "zapato": "Shoes",
+    "accesorio": "Accessory",
+    "vestido": "Dress",
+    "falda": "Skirt",
+    "chaqueta": "Jacket",
+    "sombrero": "Hat",
+    "bolso": "Bag",
+    "otro": "Other"
+  },
+  "colors": {
+    "negro": "Black",
+    "blanco": "White",
+    "azul": "Blue",
+    "rojo": "Red",
+    "verde": "Green",
+    "amarillo": "Yellow",
+    "naranja": "Orange",
+    "rosa": "Pink",
+    "morado": "Purple",
+    "gris": "Gray",
+    "marron": "Brown",
+    "beige": "Beige",
+    "turquesa": "Turquoise",
+    "dorado": "Gold",
+    "plateado": "Silver"
+  },
+  "seasons": {
+    "verano": "Summer",
+    "invierno": "Winter",
+    "primavera": "Spring",
+    "otono": "Fall",
+    "todo": "All Seasons"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back"
+  },
+  "tryon": {
+    "loading": "Starting try-on...",
+    "live": "Live",
+    "hint": "Step back so your full body is visible",
+    "error": "Could not access the camera. Check your browser permissions.",
+    "retry": "Retry",
+    "modelError": "Failed to load the 3D model.",
+    "calibrating": "Calibrating silhouette...",
+    "debugSkeleton": "Show body",
+    "debugGarment": "Show garment"
+  }
+}

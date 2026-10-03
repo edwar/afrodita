@@ -1,0 +1,147 @@
+export interface SampleCollectionItem {
+  name: string
+  category: string
+  color: string
+  material?: string
+  season?: string
+  imageUrl: string
+}
+
+export const SAMPLE_COLLECTION: SampleCollectionItem[] = [
+  {
+    name: "Camisa de lino azul",
+    category: "camisa",
+    color: "azul",
+    material: "Lino",
+    season: "primavera",
+    imageUrl: "/collection/shirt-blue.jpg",
+  },
+  {
+    name: "Pantalón chino beige",
+    category: "pantalon",
+    color: "beige",
+    material: "Algodón",
+    season: "todo",
+    imageUrl: "/collection/pants-beige.jpg",
+  },
+  {
+    name: "Pantalón cargo verde",
+    category: "pantalon",
+    color: "verde",
+    material: "Ripstop",
+    season: "otono",
+    imageUrl: "/collection/pants-cargo.jpg",
+  },
+  {
+    name: "Jeans oscuro",
+    category: "pantalon",
+    color: "azul",
+    material: "Denim",
+    season: "todo",
+    imageUrl: "/collection/jeans-dark.jpg",
+  },
+  {
+    name: "Chaqueta vaquera",
+    category: "chaqueta",
+    color: "azul",
+    material: "Denim",
+    season: "primavera",
+    imageUrl: "/collection/jacket-denim.jpg",
+  },
+  {
+    name: "Camiseta blanca",
+    category: "camisa",
+    color: "blanco",
+    material: "Algodón",
+    season: "verano",
+    imageUrl: "/collection/tshirt-white.jpg",
+  },
+  {
+    name: "Camiseta negra",
+    category: "camisa",
+    color: "negro",
+    material: "Algodón",
+    season: "todo",
+    imageUrl: "/collection/tshirt-black.jpg",
+  },
+  {
+    name: "Zapatillas blancas",
+    category: "zapato",
+    color: "blanco",
+    material: "Sintético",
+    season: "todo",
+    imageUrl: "/collection/sneakers-white.jpg",
+  },
+  {
+    name: "Botas negras",
+    category: "zapato",
+    color: "negro",
+    material: "Cuero",
+    season: "invierno",
+    imageUrl: "/collection/boots-black.jpg",
+  },
+  {
+    name: "Zapatos marrones",
+    category: "zapato",
+    color: "marron",
+    material: "Cuero",
+    season: "otono",
+    imageUrl: "/collection/shoes-brown.jpg",
+  },
+  {
+    name: "Gafas de sol aviador",
+    category: "accesorio",
+    color: "negro",
+    material: "Metal",
+    season: "verano",
+    imageUrl: "/collection/acc-gafas.jpg",
+  },
+  {
+    name: "Bolso cruzado rosa",
+    category: "bolso",
+    color: "rosa",
+    material: "Cuero",
+    season: "todo",
+    imageUrl: "/collection/acc-bolso.jpg",
+  },
+  {
+    name: "Sombrero bucket camuflaje",
+    category: "sombrero",
+    color: "verde",
+    material: "Algodón",
+    season: "verano",
+    imageUrl: "/collection/acc-sombrero.jpg",
+  },
+  {
+    name: "Cinturón de cuero clásico",
+    category: "accesorio",
+    color: "marron",
+    material: "Cuero",
+    season: "todo",
+    imageUrl: "/collection/acc-cinturon.jpg",
+  },
+  {
+    name: "Collar vintage dorado",
+    category: "accesorio",
+    color: "dorado",
+    material: "Metal",
+    season: "todo",
+    imageUrl: "/collection/acc-collar.jpg",
+  },
+  {
+    name: "Reloj de acero pulido",
+    category: "accesorio",
+    color: "plateado",
+    material: "Acero",
+    season: "todo",
+    imageUrl: "/collection/acc-reloj.jpg",
+  },
+  {
+    name: "Bufanda de seda estampada",
+    category: "accesorio",
+    color: "rosa",
+    material: "Seda",
+    season: "invierno",
+    imageUrl: "/collection/acc-bufanda.jpg",
+  },
+]

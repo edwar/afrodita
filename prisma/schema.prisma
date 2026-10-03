@@ -7,10 +7,110 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Better Auth models
 model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  session       Session[]
+  account       Account[]
+  wardrobe      Wardrobe[]
+  outfits       Outfit[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  expiresAt   DateTime
+  token       String   @unique
+  ipAddress   String?
+  userAgent   String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  accountId         String
+  providerId        String
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken       String?
+  refreshToken      String?
+  idToken           String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope             String?
+  password          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// App models
+model Wardrobe {
   id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
+  userId    String
+  name      String
+  category  String   // camisa, pantalon, zapato, accesorio, vestido, falda, chaqueta, sombrero, bolso
+  color     String
+  material  String?  // algodon, poliester, lana, cuero, etc.
+  brand     String?
+  season    String?  // verano, invierno, primavera, otono, todo
+  imageUrl  String
+  modelUrl  String?  // GLB generado por API image-to-3D
+  // generating | ready | failed | null (nunca iniciado)
+  model3dStatus String?
+  model3dError  String?  // último error amigable de generación
+
+  // Pipeline VTO (Blender headless: retopo + rig + LODs)
+  riggedModelUrl     String?   // GLB con skin (paso 02-rig)
+  rigStatus          String?   // pending | processing | ready | failed | null (no aplica)
+  rigError           String?
+  skeletonMapVersion String?   // "vto-skeleton-v1" — invalida retarget si cambia
+  lodUrls            String[]  // [lod0, lod1, lod2]
+  materialProfile    String?   // key de garment-material.ts
+  restPoseMeta       Json?     // dimensiones bind / offsets por hueso (Fase 2)
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  outfits   OutfitOption[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Outfit {
+  id        String   @id @default(cuid())
+  userId    String
+  prompt    String   // prompt generado por el chat
+  context   String?  // ocasión, evento, estilo
+  options   OutfitOption[]
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model OutfitOption {
+  id        String   @id @default(cuid())
+  outfitId  String
+  title     String   // "Look Casual Elegante", "Estilo Minimalista", etc.
+  description String?
+  previewUrl String? // URL del render 3D del outfit
+  items     Wardrobe[]
+  outfit    Outfit   @relation(fields: [outfitId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
 }
