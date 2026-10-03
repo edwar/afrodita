@@ -3,8 +3,12 @@ import { ImageResponse } from "next/og"
 export const alt = "Afrodita — tu estilo, hecho con lo que ya tienes"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
-export const runtime = "edge"
 
+/**
+ * Satori no soporta z-index ni shorthand `inset`; la capa visual se resuelve
+ * con el orden del DOM (los elementos posteriores se pintan encima) y con
+ * top/left/right/bottom individuales en elementos posicionados.
+ */
 export default function OpenGraphImage() {
   return new ImageResponse(
     (
@@ -20,6 +24,7 @@ export default function OpenGraphImage() {
           fontFamily: "Georgia, Times New Roman, serif",
         }}
       >
+        {/* 1. Borde editorial: se pinta primero (quedará detrás) */}
         <div
           style={{
             position: "absolute",
@@ -31,13 +36,14 @@ export default function OpenGraphImage() {
             display: "flex",
           }}
         />
+
+        {/* 2. Contenido principal: columna izquierda */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
             width: 760,
-            zIndex: 1,
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
@@ -53,9 +59,18 @@ export default function OpenGraphImage() {
               ESTILO PERSONAL CON IA
             </span>
           </div>
+
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-            <div style={{ fontSize: 75, lineHeight: 0.98, letterSpacing: "-3px" }}>
-              Tu estilo,
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                fontSize: 75,
+                lineHeight: 0.98,
+                letterSpacing: "-3px",
+              }}
+            >
+              <div>Tu estilo,</div>
               <div style={{ fontStyle: "italic", color: "#6B6B6B" }}>
                 hecho con lo que ya tienes.
               </div>
@@ -71,6 +86,7 @@ export default function OpenGraphImage() {
               Tu closet. Nuevas combinaciones. Tu decisión.
             </div>
           </div>
+
           <div
             style={{
               width: 58,
@@ -80,6 +96,8 @@ export default function OpenGraphImage() {
             }}
           />
         </div>
+
+        {/* 3. Panel negro: se pinta después del borde (queda encima donde coinciden) */}
         <div
           style={{
             position: "absolute",

@@ -74,8 +74,8 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
-    shortcut: "/favicon.svg",
+    icon: [{ url: "/favicon.svg?v=2", type: "image/svg+xml" }],
+    shortcut: "/favicon.svg?v=2",
   },
 }
 
