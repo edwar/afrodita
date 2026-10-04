@@ -140,6 +140,7 @@
     "preview3dClose": "Cerrar vista previa",
     "preview3dHint": "Arrastra para rotar",
     "model3dLoading": "Cargando modelo 3D...",
+    "model3dLoadError": "No se pudo cargar el modelo 3D.",
     "edit": "Editar",
     "delete": "Eliminar",
     "deleteTitle": "Eliminar prenda",

@@ -14,11 +14,15 @@ export type WardrobeItem = {
   season?: string
   imageUrl: string
   modelUrl?: string | null
+  riggedModelUrl?: string | null
   model3dStatus?: string | null
   model3dError?: string | null
 }
 
-export type WardrobeInput = Omit<WardrobeItem, "id" | "modelUrl" | "model3dStatus">
+export type WardrobeInput = Omit<
+  WardrobeItem,
+  "id" | "modelUrl" | "riggedModelUrl" | "model3dStatus"
+>
 
 function normalizeWardrobeItem(raw: unknown): WardrobeItem | null {
   if (!raw || typeof raw !== "object") return null
@@ -34,6 +38,7 @@ function normalizeWardrobeItem(raw: unknown): WardrobeItem | null {
     season: item.season ?? undefined,
     imageUrl: item.imageUrl,
     modelUrl: item.modelUrl ?? null,
+    riggedModelUrl: item.riggedModelUrl ?? null,
     model3dStatus: item.model3dStatus ?? null,
     model3dError: item.model3dError ?? null,
   }

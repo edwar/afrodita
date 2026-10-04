@@ -7,8 +7,8 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ key: string }> },
 ) {
+  const { key } = await params
   try {
-    const { key } = await params
     if (!KEY_PATTERN.test(key)) {
       return new Response("Invalid key", { status: 400 })
     }
@@ -23,7 +23,8 @@ export async function GET(
         "Cache-Control": "public, max-age=31536000, immutable",
       },
     })
-  } catch {
+  } catch (error) {
+    console.error(`[api/images] ${key} no disponible:`, error)
     return new Response("Image not found", { status: 404 })
   }
 }

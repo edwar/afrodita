@@ -146,6 +146,7 @@ export function WardrobeCard({
           open
           onClose={() => setPreviewOpen(false)}
           modelUrl={item.modelUrl ?? ""}
+          riggedModelUrl={item.riggedModelUrl}
           name={item.name}
           material={item.material}
         />

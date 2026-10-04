@@ -1,7 +1,15 @@
 "use client"
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react"
-import { X, Loader2 } from "lucide-react"
+import {
+  Component,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react"
+import { X, Loader2, Box } from "lucide-react"
 import { Canvas } from "@react-three/fiber"
 import { OrbitControls, useGLTF, Center } from "@react-three/drei"
 import { useTranslation } from "@/lib/i18n"
@@ -43,10 +51,29 @@ function ModelLoading() {
   )
 }
 
+/** Captura errores de carga del GLB (useGLTF) sin romper el árbol de React. */
+class ModelErrorBoundary extends Component<
+  { children: ReactNode; onError: () => void },
+  { hasError: boolean }
+> {
+  state = { hasError: false }
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+  componentDidCatch() {
+    this.props.onError()
+  }
+  render() {
+    return this.state.hasError ? null : this.props.children
+  }
+}
+
 interface ModelPreviewModalProps {
   open: boolean
   onClose: () => void
   modelUrl: string
+  /** GLB optimizado (rig pipeline) — se prefiere sobre el modelo crudo */
+  riggedModelUrl?: string | null
   name: string
   material?: string
 }
@@ -59,18 +86,21 @@ export function ModelPreviewModal({
   open,
   onClose,
   modelUrl,
+  riggedModelUrl,
   name,
   material,
 }: ModelPreviewModalProps) {
   const { t } = useTranslation()
   const [modelReady, setModelReady] = useState(false)
+  const [loadFailed, setLoadFailed] = useState(false)
   const handleReady = useCallback(() => setModelReady(true), [])
 
   const glbUrl = useMemo(() => {
-    if (!modelUrl) return null
-    if (modelUrl.startsWith("http") || modelUrl.startsWith("/")) return modelUrl
-    return `/api/models/${modelUrl}`
-  }, [modelUrl])
+    const preferred = riggedModelUrl || modelUrl
+    if (!preferred) return null
+    if (preferred.startsWith("http") || preferred.startsWith("/")) return preferred
+    return `/api/models/${preferred}`
+  }, [riggedModelUrl, modelUrl])
 
   if (!open || !glbUrl) return null
 
@@ -118,34 +148,43 @@ export function ModelPreviewModal({
             }}
           />
 
-          <Canvas
-            key={glbUrl}
-            camera={{ position: [0, 0.4, 2.2], fov: 40 }}
-            dpr={[1, 1.5]}
-            gl={{ antialias: true, alpha: true }}
-          >
-            <ambientLight intensity={0.9} />
-            <directionalLight position={[3, 4, 5]} intensity={1.15} />
-            <directionalLight position={[-3, 1, 2]} intensity={0.5} />
-            <directionalLight position={[0, -2, -3]} intensity={0.3} />
-            <Suspense fallback={null}>
-              <Model
-                url={glbUrl}
-                material={material}
-                onReady={handleReady}
+          <ModelErrorBoundary onError={() => setLoadFailed(true)}>
+            <Canvas
+              key={glbUrl}
+              camera={{ position: [0, 0.4, 2.2], fov: 40 }}
+              dpr={[1, 1.5]}
+              gl={{ antialias: true, alpha: true }}
+            >
+              <ambientLight intensity={0.9} />
+              <directionalLight position={[3, 4, 5]} intensity={1.15} />
+              <directionalLight position={[-3, 1, 2]} intensity={0.5} />
+              <directionalLight position={[0, -2, -3]} intensity={0.3} />
+              <Suspense fallback={null}>
+                <Model
+                  url={glbUrl}
+                  material={material}
+                  onReady={handleReady}
+                />
+              </Suspense>
+              <OrbitControls
+                enablePan={false}
+                enableZoom
+                minDistance={1}
+                maxDistance={4}
+                autoRotate
+                autoRotateSpeed={1.2}
               />
-            </Suspense>
-            <OrbitControls
-              enablePan={false}
-              enableZoom
-              minDistance={1}
-              maxDistance={4}
-              autoRotate
-              autoRotateSpeed={1.2}
-            />
-          </Canvas>
+            </Canvas>
+          </ModelErrorBoundary>
 
-          {!modelReady && <ModelLoading />}
+          {!modelReady && !loadFailed && <ModelLoading />}
+
+          {loadFailed && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/80 p-8 text-center">
+              <Box className="w-8 h-8 text-[#C9B99A]" />
+              <p className="text-sm">{t("wardrobe.model3dLoadError")}</p>
+            </div>
+          )}
 
           {modelReady && (
             <p className="absolute bottom-3 left-0 right-0 text-center text-[10px] tracking-[0.2em] uppercase text-white/45 pointer-events-none">

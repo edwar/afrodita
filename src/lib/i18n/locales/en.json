@@ -140,6 +140,7 @@
     "preview3dClose": "Close preview",
     "preview3dHint": "Drag to rotate",
     "model3dLoading": "Loading 3D model...",
+    "model3dLoadError": "Could not load the 3D model.",
     "edit": "Edit",
     "delete": "Delete",
     "deleteTitle": "Delete garment",
