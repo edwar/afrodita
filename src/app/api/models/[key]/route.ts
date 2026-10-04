@@ -14,17 +14,18 @@ export async function GET(
       return new Response("Invalid key", { status: 400 })
     }
 
-    const { body, contentType } = await getModelObject(key)
+    const { body, contentType, contentLength } = await getModelObject(key)
     const stream =
       body instanceof Readable ? Readable.toWeb(body) : (body as ReadableStream)
 
-    return new Response(stream as ReadableStream, {
-      headers: {
-        "Content-Type": contentType || "model/gltf-binary",
-        "Content-Length": String((body as { length?: number }).length ?? ""),
-        "Cache-Control": "public, max-age=31536000, immutable",
-      },
-    })
+    const headers: Record<string, string> = {
+      "Content-Type": contentType || "model/gltf-binary",
+      "Cache-Control": "public, max-age=31536000, immutable",
+    }
+    // Un Content-Length vacío es inválido: Vercel responde 500 antes de streamear
+    if (contentLength != null) headers["Content-Length"] = String(contentLength)
+
+    return new Response(stream as ReadableStream, { headers })
   } catch (error) {
     // El error real es clave para diagnosticar credenciales de storage en Vercel
     console.error(`[api/models] ${key} no disponible:`, error)

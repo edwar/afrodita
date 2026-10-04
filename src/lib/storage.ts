@@ -65,11 +65,19 @@ export async function getImageObject(
 
 export async function getModelObject(
   key: string,
-): Promise<{ body: ReadableStream | NodeJS.ReadableStream; contentType?: string }> {
+): Promise<{
+  body: ReadableStream | NodeJS.ReadableStream
+  contentType?: string
+  contentLength?: number
+}> {
   const s3 = getS3Client()
   const res = await s3.send(
     new GetObjectCommand({ Bucket: WARDROBE_BUCKET, Key: key }),
   )
   if (!res.Body) throw new Error("Objeto no encontrado en storage")
-  return { body: res.Body as ReadableStream, contentType: res.ContentType }
+  return {
+    body: res.Body as ReadableStream,
+    contentType: res.ContentType,
+    contentLength: res.ContentLength,
+  }
 }
