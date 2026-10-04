@@ -3,7 +3,18 @@ import { NextRequest, NextResponse } from "next/server"
 const PROTECTED_PAGE_PREFIXES = ["/wardrobe", "/chat", "/preview"]
 const PUBLIC_API_PREFIXES = ["/api/auth"]
 
-const SESSION_COOKIE = "better-auth.session_token"
+// better-auth renombra la cookie con prefijo seguro cuando el baseURL es https
+// (__Secure-better-auth.session_token). El proxy debe reconocer ambos, o entra
+// en loop: no ve cookie → /login, y el layout de auth ve sesión válida → /wardrobe.
+const SESSION_COOKIES = [
+  "better-auth.session_token",
+  "__Secure-better-auth.session_token",
+  "__Host-better-auth.session_token",
+]
+
+function hasSessionCookie(request: NextRequest): boolean {
+  return SESSION_COOKIES.some((name) => !!request.cookies.get(name)?.value)
+}
 
 function isProtectedPage(pathname: string) {
   return PROTECTED_PAGE_PREFIXES.some(
@@ -24,10 +35,10 @@ function isPublicApi(pathname: string) {
  */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const hasSessionCookie = !!request.cookies.get(SESSION_COOKIE)?.value
+  const hasSession = hasSessionCookie(request)
 
   if (pathname.startsWith("/api/")) {
-    if (isPublicApi(pathname) || hasSessionCookie) {
+    if (isPublicApi(pathname) || hasSession) {
       return NextResponse.next()
     }
     return NextResponse.json(
@@ -36,7 +47,7 @@ export function proxy(request: NextRequest) {
     )
   }
 
-  if (isProtectedPage(pathname) && !hasSessionCookie) {
+  if (isProtectedPage(pathname) && !hasSession) {
     const loginUrl = new URL("/login", request.url)
     loginUrl.searchParams.set("callbackUrl", pathname)
     return NextResponse.redirect(loginUrl)
