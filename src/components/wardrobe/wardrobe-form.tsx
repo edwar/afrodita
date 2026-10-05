@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react"
 import { X, Upload, Loader2 } from "lucide-react"
+import { sileo } from "sileo"
 import { WARDROBE_CATEGORIES, WARDROBE_COLORS, WARDROBE_SEASONS } from "@/lib/constants"
 import { useTranslation } from "@/lib/i18n"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -49,11 +50,16 @@ export function WardrobeForm({ item, onClose, onSubmit }: WardrobeFormProps) {
       const body = new FormData()
       body.append("file", file)
       const res = await fetch("/api/upload", { method: "POST", body })
-      if (!res.ok) throw new Error("Upload failed")
-      const { imageUrl } = await res.json()
-      setFormData((prev) => ({ ...prev, imageUrl }))
+      const data = await res.json().catch(() => ({}))
+      // The server says why (no plan, monthly cap, too big...): show it
+      if (!res.ok) throw new Error(data?.error || t("wardrobe.form.uploadError"))
+      setFormData((prev) => ({ ...prev, imageUrl: data.imageUrl }))
     } catch (error) {
       console.error("Error uploading:", error)
+      sileo.error({
+        title:
+          error instanceof Error ? error.message : t("wardrobe.form.uploadError"),
+      })
     } finally {
       setIsUploading(false)
     }
