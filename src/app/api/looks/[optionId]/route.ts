@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireUser, unauthorized } from "@/lib/require-user"
-import { lookKey, setLike } from "@/lib/tryon/likes"
+import { lookKey } from "@/lib/tryon/feedback-core"
+import { removeLike } from "@/lib/tryon/feedback"
 import { deleteLookImage } from "@/lib/tryon/looks"
 
 /**
  * Deletes a look: every outfit option of the user made of exactly the same
  * garments (the gallery shows them as one) and its generated image. Outfits
  * left without options go too. The garments themselves are not touched.
+ * A "like" goes with the look; a "dislike" stays so it is not proposed again.
  */
 export async function DELETE(
   request: Request,
@@ -37,7 +39,7 @@ export async function DELETE(
       where: { userId: user.id, options: { none: {} } },
     })
     await deleteLookImage(user.id, target.items)
-    await setLike(user.id, key, false)
+    await removeLike(user.id, key)
 
     return NextResponse.json({ deleted: same.length })
   } catch (error) {

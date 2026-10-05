@@ -8,6 +8,7 @@ import {
 import { hasValidApiKey } from "../env"
 import {
   buildAnchorsSection,
+  buildPreferencesSection,
   buildWardrobeList,
   mapItemIds,
   buildConversationalSystemPrompt,
@@ -114,7 +115,7 @@ ${conversation}
 PRENDAS DISPONIBLES EN EL CLOSET DEL USUARIO:
 ${wardrobeList}
 
-${buildAnchorsSection(request.anchors)}Responde al último mensaje del usuario siguiendo las instrucciones del sistema.`
+${buildAnchorsSection(request.anchors)}${buildPreferencesSection(request.preferences)}Responde al último mensaje del usuario siguiendo las instrucciones del sistema.`
 
     const { text, tokens } = await this.callAnthropic(systemPrompt, [
       { role: "user", content: userPrompt },

@@ -14,6 +14,20 @@ export interface ChatMessage {
   content: string
 }
 
+/** A look the user voted on, as the stylist needs to see it. */
+export interface PreferenceExample {
+  items: { name: string; category: string }[]
+  /** What the user asked for when it was proposed. */
+  request?: string
+  /** Why it was rejected (already in words). */
+  reasons?: string[]
+}
+
+export interface Preferences {
+  liked: PreferenceExample[]
+  disliked: PreferenceExample[]
+}
+
 export interface OutfitRequest {
   prompt: string
   context?: string
@@ -27,6 +41,8 @@ export interface ChatRequest {
   wardrobe: WardrobeItem[]
   /** Garments the user chose to build the outfits around (at most 2). */
   anchors?: WardrobeItem[]
+  /** Looks the user liked and rejected so far. */
+  preferences?: Preferences
   locale?: "es" | "en"
 }
 

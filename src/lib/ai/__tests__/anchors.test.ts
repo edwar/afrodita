@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest"
-import { buildAnchorsSection, ensureAnchors } from "../prompts"
+import {
+  buildAnchorsSection,
+  buildPreferencesSection,
+  dropDisliked,
+  ensureAnchors,
+} from "../prompts"
+import { lookKey } from "@/lib/tryon/feedback-core"
 import type { OutfitOption, WardrobeItem } from "../types"
 
 const item = (id: string, category: string): WardrobeItem => ({
@@ -72,5 +78,57 @@ describe("buildAnchorsSection", () => {
     expect(section).toContain("id: shirt")
     expect(section).toContain("id: jeans")
     expect(section).toMatch(/deben incluirlas TODAS/)
+  })
+})
+
+describe("buildPreferencesSection", () => {
+  it("is empty until the user has voted", () => {
+    expect(buildPreferencesSection(undefined)).toBe("")
+    expect(buildPreferencesSection({ liked: [], disliked: [] })).toBe("")
+  })
+
+  it("shows what was liked and rejected, with request and reasons", () => {
+    const section = buildPreferencesSection({
+      liked: [{ items: [{ name: "Chaqueta marrón", category: "chaqueta" }], request: "cena" }],
+      disliked: [
+        {
+          items: [
+            { name: "Camisa blanca", category: "camisa" },
+            { name: "Jeans azul", category: "pantalon" },
+          ],
+          reasons: ["demasiado formal"],
+        },
+      ],
+    })
+    expect(section).toContain("GUSTARON")
+    expect(section).toContain('Chaqueta marrón (chaqueta) — pidió: "cena"')
+    expect(section).toContain("Camisa blanca (camisa) + Jeans azul (pantalon) — motivo: demasiado formal")
+    expect(section).toMatch(/No repitas ninguna de las combinaciones/)
+    expect(section.endsWith("\n\n")).toBe(true)
+  })
+
+  it("omits a section with no examples", () => {
+    const section = buildPreferencesSection({
+      liked: [],
+      disliked: [{ items: [{ name: "Buso", category: "camisa" }] }],
+    })
+    expect(section).not.toContain("GUSTARON")
+    expect(section).toContain("NO le gustaron")
+  })
+})
+
+describe("dropDisliked", () => {
+  it("removes options that repeat a rejected look, in any order", () => {
+    const rejected = new Set([lookKey([shirt, jeans])])
+    const kept = dropDisliked(
+      [option([jeans, shirt]), option([shirt, boots])],
+      rejected
+    )
+    expect(kept.map(ids)).toEqual([["shirt", "boots"]])
+  })
+
+  it("leaves everything alone when nothing was rejected", () => {
+    const options = [option([shirt])]
+    expect(dropDisliked(options, new Set())).toBe(options)
   })
 })

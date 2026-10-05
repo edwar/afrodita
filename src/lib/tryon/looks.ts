@@ -30,6 +30,7 @@ import {
   tryOnModel,
   type TryOnGarmentInput,
 } from "./gemini"
+import { checkPhoto } from "./photo-check"
 
 const PHOTO_MAX_SIDE = 1536
 const GARMENT_MAX_SIDE = 1024
@@ -45,8 +46,19 @@ export interface LookGarment {
 const userPrefix = (userId: string) => `tryon/${userId}/`
 const photoKey = (userId: string) => `${userPrefix(userId)}base.jpg`
 const lookPrefix = (userId: string) => `${userPrefix(userId)}look-`
+const consentKey = (userId: string) => `${userPrefix(userId)}consent.json`
+const photoChecksKey = (userId: string) =>
+  `${userPrefix(userId)}photochecks-${new Date().toISOString().slice(0, 10)}.json`
+/** Version of the conditions the user accepts when uploading a photo. */
+export const CONSENT_VERSION = "2026-10-v1"
 const usageKey = (userId: string) =>
   `${userPrefix(userId)}usage-${new Date().toISOString().slice(0, 10)}.json`
+
+/** Photo uploads that get reviewed per user and day (each one is a model call). */
+function photoCheckLimit(): number {
+  const value = Number(process.env.PHOTO_CHECK_DAILY_LIMIT)
+  return Number.isFinite(value) && value > 0 ? value : 15
+}
 
 function dailyLimit(): number {
   const value = Number(process.env.TRYON_DAILY_LIMIT)
@@ -85,11 +97,37 @@ function legacyLookHash(photoVersion: string, garments: Pick<LookGarment, "id" |
 
 // --- Base photo -------------------------------------------------------------
 
+async function readCount(key: string): Promise<number> {
+  const stored = await getObject(key)
+  if (!stored) return 0
+  try {
+    return Number(JSON.parse(stored.bytes.toString()).count) || 0
+  } catch {
+    return 0
+  }
+}
+
 /**
  * Stores the user's photo, upright (phone photos carry their rotation in
  * EXIF) and downsized. Looks made from the previous photo are kept.
+ *
+ * Nothing reaches storage until every check passes, in this order:
+ *   1. the user confirmed the conditions,
+ *   2. the file is a readable image,
+ *   3. the user is under the daily limit of reviewed uploads,
+ *   4. the review (nudity, minors, people...) accepts it.
+ * A photo that fails or cannot be reviewed is dropped: it is not stored and
+ * the only trace is the reason in the log, never the image or the user.
  */
-export async function savePhoto(userId: string, upload: Buffer): Promise<void> {
+export async function savePhoto(
+  userId: string,
+  upload: Buffer,
+  consent: boolean
+): Promise<void> {
+  if (!consent) {
+    throw new TryOnError("Para subir tu foto debes confirmar las condiciones de uso.", 400)
+  }
+
   let normalized: Buffer
   try {
     normalized = await sharp(upload)
@@ -100,7 +138,34 @@ export async function savePhoto(userId: string, upload: Buffer): Promise<void> {
   } catch {
     throw new TryOnError("No se pudo leer la imagen. Usa un JPG o PNG.", 400)
   }
+
+  const attempts = await readCount(photoChecksKey(userId))
+  if (attempts >= photoCheckLimit()) {
+    throw new TryOnError(
+      "Hiciste demasiados intentos de subir fotos hoy. Vuelve a intentarlo mañana.",
+      429
+    )
+  }
+  await putObject(
+    photoChecksKey(userId),
+    Buffer.from(JSON.stringify({ count: attempts + 1 })),
+    "application/json"
+  )
+
+  // What is reviewed is exactly what gets stored
+  const verdict = await checkPhoto(normalized)
+  if (!verdict.ok) {
+    console.warn(`[photo-check] rejected: ${verdict.reason}`)
+    throw new TryOnError(verdict.message, 422)
+  }
+
   await putObject(photoKey(userId), normalized, "image/jpeg")
+  // Record of when the conditions were accepted, and which version
+  await putObject(
+    consentKey(userId),
+    Buffer.from(JSON.stringify({ version: CONSENT_VERSION, at: new Date().toISOString() })),
+    "application/json"
+  )
 }
 
 export function getPhoto(userId: string) {

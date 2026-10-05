@@ -1,4 +1,10 @@
-import type { OutfitOption, WardrobeItem } from "./types"
+import { lookKey } from "@/lib/tryon/feedback-core"
+import type {
+  OutfitOption,
+  PreferenceExample,
+  Preferences,
+  WardrobeItem,
+} from "./types"
 
 export function buildWardrobeList(wardrobe: WardrobeItem[]): string {
   // The id goes first: the model must return it back to link each garment
@@ -36,6 +42,58 @@ ${buildWardrobeList(anchors)}
 - El último mensaje del usuario describe lo que busca: si ya trae ocasión o estilo, genera los outfits ahora, sin hacer más preguntas.
 
 `
+}
+
+/** Rejection reasons in the words the stylist reads. */
+export const REASON_WORDS: Record<string, string> = {
+  colors: "los colores no combinan",
+  too_formal: "demasiado formal",
+  too_casual: "demasiado informal",
+  combination: "la combinación no le convence",
+  overused: "ya lo usó mucho",
+}
+
+function describeExample(example: PreferenceExample): string {
+  const items = example.items.map((item) => `${item.name} (${item.category})`).join(" + ")
+  const notes = [
+    example.request ? `pidió: "${example.request}"` : "",
+    example.reasons?.length ? `motivo: ${example.reasons.join(", ")}` : "",
+  ].filter(Boolean)
+  return `- ${items}${notes.length ? ` — ${notes.join("; ")}` : ""}`
+}
+
+/**
+ * What the user liked and rejected before, for the stylist to learn their
+ * taste from. Empty when there is nothing yet.
+ */
+export function buildPreferencesSection(preferences: Preferences | undefined): string {
+  if (!preferences) return ""
+  const { liked, disliked } = preferences
+  if (liked.length === 0 && disliked.length === 0) return ""
+
+  const lines = ["GUSTOS DEL USUARIO (aprendidos de sus valoraciones anteriores):"]
+  if (liked.length) {
+    lines.push("Looks que le GUSTARON:", ...liked.map(describeExample))
+  }
+  if (disliked.length) {
+    lines.push("Looks que NO le gustaron:", ...disliked.map(describeExample))
+  }
+  lines.push(
+    "- Acércate al estilo de los que le gustaron y evita lo que motivó los rechazos.",
+    "- No repitas ninguna de las combinaciones que no le gustaron.",
+    "- Es una guía de gusto, no una plantilla: no copies looks anteriores, propón variedad.",
+    "- Si lo que pide ahora contradice un gusto anterior, manda lo que pide ahora."
+  )
+  return lines.join("\n") + "\n\n"
+}
+
+/** Drops the options that repeat a look the user rejected. */
+export function dropDisliked(
+  options: OutfitOption[],
+  disliked: Set<string>
+): OutfitOption[] {
+  if (disliked.size === 0) return options
+  return options.filter((option) => !disliked.has(lookKey(option.items)))
 }
 
 /**

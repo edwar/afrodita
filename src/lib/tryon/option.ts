@@ -1,20 +1,37 @@
 import { prisma } from "@/lib/prisma"
 import type { LookGarment } from "./looks"
 
+export interface OptionContext {
+  garments: LookGarment[]
+  /** What the user asked the stylist for when this option was proposed. */
+  request: string
+}
+
+/** Garments and request of an outfit option, or null if it is not the user's. */
+export async function getOptionContext(
+  optionId: string,
+  userId: string
+): Promise<OptionContext | null> {
+  const option = await prisma.outfitOption.findUnique({
+    where: { id: optionId },
+    include: { items: true, outfit: { select: { userId: true, prompt: true } } },
+  })
+  if (!option || option.outfit.userId !== userId) return null
+  return {
+    request: option.outfit.prompt,
+    garments: option.items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      category: item.category,
+      imageUrl: item.imageUrl,
+    })),
+  }
+}
+
 /** Garments of an outfit option, or null if it is not the user's. */
 export async function getOptionGarments(
   optionId: string,
   userId: string
 ): Promise<LookGarment[] | null> {
-  const option = await prisma.outfitOption.findUnique({
-    where: { id: optionId },
-    include: { items: true, outfit: { select: { userId: true } } },
-  })
-  if (!option || option.outfit.userId !== userId) return null
-  return option.items.map((item) => ({
-    id: item.id,
-    name: item.name,
-    category: item.category,
-    imageUrl: item.imageUrl,
-  }))
+  return (await getOptionContext(optionId, userId))?.garments ?? null
 }

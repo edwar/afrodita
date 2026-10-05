@@ -1,9 +1,36 @@
 import { NextResponse } from "next/server"
 import { getAIOrchestrator } from "@/lib/ai"
 import type { ChatMessage } from "@/lib/ai"
-import { MAX_ANCHORS, ensureAnchors } from "@/lib/ai/prompts"
+import { MAX_ANCHORS, REASON_WORDS, dropDisliked, ensureAnchors } from "@/lib/ai/prompts"
+import type { Preferences, PreferenceExample } from "@/lib/ai"
+import { getFeedback } from "@/lib/tryon/feedback"
+import { dislikedKeys, recentVotes, type Feedback } from "@/lib/tryon/feedback-core"
 import { prisma } from "@/lib/prisma"
 import { requireUserId, unauthorized } from "@/lib/require-user"
+
+/** Votes that feed the prompt: the most recent of each kind. */
+const EXAMPLES_PER_KIND = 8
+
+function buildPreferences(
+  feedback: Feedback,
+  wardrobe: { id: string; name: string; category: string }[]
+): Preferences {
+  const byId = new Map(wardrobe.map((item) => [item.id, item]))
+  const examples = (vote: "like" | "dislike"): PreferenceExample[] =>
+    recentVotes(feedback, vote, EXAMPLES_PER_KIND).flatMap(({ record }) => {
+      const items = record.garments.map((id) => byId.get(id))
+      // A look with a garment that was deleted says nothing useful anymore
+      if (items.some((item) => !item)) return []
+      return [
+        {
+          items: items.map((item) => ({ name: item!.name, category: item!.category })),
+          request: record.request || undefined,
+          reasons: record.reasons.map((reason) => REASON_WORDS[reason]).filter(Boolean),
+        },
+      ]
+    })
+  return { liked: examples("like"), disliked: examples("dislike") }
+}
 
 export async function POST(request: Request) {
   try {
@@ -50,16 +77,36 @@ export async function POST(request: Request) {
       .filter((item) => wantedAnchors.has(item.id))
       .slice(0, MAX_ANCHORS)
 
+    // Taste memory is a bonus: if storage hiccups the stylist still answers
+    const feedback = await getFeedback(userId).catch((error) => {
+      console.error("getFeedback failed:", error)
+      return {} as Feedback
+    })
+
     const orchestrator = getAIOrchestrator()
     const response = await orchestrator.chat({
       messages: chatMessages,
       wardrobe: wardrobeItems,
       anchors,
+      preferences: buildPreferences(feedback, wardrobeItems),
       locale: locale === "en" ? "en" : "es",
     })
     // Whatever the model answered, every option wears the chosen garments
     if (response.options) {
-      response.options = ensureAnchors(response.options, anchors)
+      const wearing = ensureAnchors(response.options, anchors)
+      // ...and none repeats a look the user already rejected
+      response.options = dropDisliked(wearing, dislikedKeys(feedback))
+      if (wearing.length > 0 && response.options.length === 0) {
+        return NextResponse.json({
+          type: "message",
+          message:
+            locale === "en"
+              ? "Every combination I could put together is one you rejected before. Try another occasion, or add more garments to your closet."
+              : "Todas las combinaciones que pude armar son looks que descartaste antes. Prueba con otra ocasión o agrega más prendas a tu closet.",
+          modelUsed: response.modelUsed,
+          tokensUsed: response.tokensUsed,
+        })
+      }
     }
 
     if (response.type === "message") {

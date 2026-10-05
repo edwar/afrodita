@@ -49,6 +49,8 @@ export function useTryOnPhoto(onChange?: () => void) {
     mutationFn: async (file: File) => {
       const form = new FormData()
       form.append("file", await shrinkPhoto(file), "photo.jpg")
+      // Uploading is only reachable through the consent dialog
+      form.append("consent", "true")
       return readJson(await fetch("/api/tryon/photo", { method: "PUT", body: form }))
     },
     onSuccess: refresh,

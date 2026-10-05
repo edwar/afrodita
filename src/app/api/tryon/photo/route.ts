@@ -37,7 +37,7 @@ export async function PUT(request: Request) {
         { status: 400 },
       )
     }
-    await savePhoto(user.id, Buffer.from(await file.arrayBuffer()))
+    await savePhoto(user.id, Buffer.from(await file.arrayBuffer()), form.get("consent") === "true")
     return NextResponse.json({ ok: true })
   } catch (error) {
     if (error instanceof TryOnError) {

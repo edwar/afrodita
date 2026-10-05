@@ -1,5 +1,7 @@
 export { AIOrchestrator, getAIOrchestrator } from "./orchestrator"
 export type {
+  Preferences,
+  PreferenceExample,
   AIProvider,
   AIProviderName,
   ChatMessage,

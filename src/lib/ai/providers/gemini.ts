@@ -8,6 +8,7 @@ import {
 import { hasValidApiKey } from "../env"
 import {
   buildAnchorsSection,
+  buildPreferencesSection,
   buildWardrobeList,
   mapItemIds,
   buildConversationalSystemPrompt,
@@ -45,6 +46,8 @@ export class GeminiProvider implements AIProvider {
           generationConfig: {
             temperature: 0.8,
             maxOutputTokens: 2048,
+            // Strict JSON: free-form answers sometimes came back malformed
+            responseMimeType: "application/json",
           },
         }),
       }
@@ -71,6 +74,28 @@ export class GeminiProvider implements AIProvider {
     return JSON.parse(jsonMatch[0])
   }
 
+  /**
+   * Asks the model and parses its JSON. A malformed answer is rare but not
+   * impossible, and failing here sends the user to the local generator, so
+   * it is worth one more try.
+   */
+  private async callJson(prompt: string): Promise<{
+    parsed: ReturnType<GeminiProvider["extractJson"]>
+    text: string
+    tokens: number
+  }> {
+    let lastError: unknown
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const { text, tokens } = await this.callGemini(prompt)
+      try {
+        return { parsed: this.extractJson(text), text, tokens }
+      } catch (error) {
+        lastError = error
+      }
+    }
+    throw lastError
+  }
+
   async generate(request: OutfitRequest): Promise<OutfitResponse> {
     const wardrobeList = buildWardrobeList(request.wardrobe)
     const systemPrompt = buildOutfitSystemPrompt()
@@ -86,10 +111,9 @@ Solicitud del usuario: ${request.prompt}
 
 Genera 3 opciones de outfit usando las prendas listadas.`
 
-    const { text, tokens } = await this.callGemini(
+    const { parsed, tokens } = await this.callJson(
       `${systemPrompt}\n\n${userPrompt}`
     )
-    const parsed = this.extractJson(text)
 
     const options = (parsed.options || []).map((opt) => ({
       title: opt.title,
@@ -118,12 +142,11 @@ ${conversation}
 PRENDAS DISPONIBLES EN EL CLOSET DEL USUARIO:
 ${wardrobeList}
 
-${buildAnchorsSection(request.anchors)}Responde al último mensaje del usuario siguiendo las instrucciones del sistema.`
+${buildAnchorsSection(request.anchors)}${buildPreferencesSection(request.preferences)}Responde al último mensaje del usuario siguiendo las instrucciones del sistema.`
 
-    const { text, tokens } = await this.callGemini(
+    const { parsed, text, tokens } = await this.callJson(
       `${systemPrompt}\n\n${userPrompt}`
     )
-    const parsed = this.extractJson(text)
 
     const type = parsed.type === "outfit" ? "outfit" : "message"
 

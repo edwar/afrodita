@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireUser, unauthorized } from "@/lib/require-user"
-import { getLikes, lookKey } from "@/lib/tryon/likes"
+import { lookKey } from "@/lib/tryon/feedback-core"
+import { getFeedback } from "@/lib/tryon/feedback"
 import { describeLook, getLookIndex, resolveLook } from "@/lib/tryon/looks"
 
 /**
@@ -14,14 +15,14 @@ export async function GET(request: Request) {
   if (!user) return unauthorized()
 
   try {
-    const [outfits, index, likes] = await Promise.all([
+    const [outfits, index, feedback] = await Promise.all([
       prisma.outfit.findMany({
         where: { userId: user.id },
         orderBy: { createdAt: "desc" },
         include: { options: { include: { items: true } } },
       }),
       getLookIndex(user.id),
-      getLikes(user.id),
+      getFeedback(user.id),
     ])
 
     const options = outfits.flatMap((outfit) =>
@@ -48,7 +49,8 @@ export async function GET(request: Request) {
           garments,
           imageUrl: look.imageUrl,
           outdated: look.outdated,
-          liked: likes.has(lookKey(garments)),
+          vote: feedback[lookKey(garments)]?.vote ?? null,
+          reasons: feedback[lookKey(garments)]?.reasons ?? [],
         }
       })
     )
