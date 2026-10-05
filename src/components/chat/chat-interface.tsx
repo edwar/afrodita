@@ -1,8 +1,16 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Send, Sparkles, Loader2 } from "lucide-react"
+import Image from "next/image"
+import { Send, Sparkles, Loader2, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n"
+import {
+  GarmentFilter,
+  type FilterGarment,
+} from "@/components/tryon/garment-filter"
+
+/** Garments the user can fix as the base of the outfits. */
+const MAX_ANCHORS = 2
 
 interface Message {
   id: string
@@ -16,9 +24,19 @@ interface ChatInterfaceProps {
     message?: string
   }>
   isGenerating: boolean
+  /** The user's closet, to pick base garments from. */
+  garments?: FilterGarment[]
+  anchorIds?: string[]
+  onAnchorsChange?: (ids: string[]) => void
 }
 
-export function ChatInterface({ onSendMessage, isGenerating }: ChatInterfaceProps) {
+export function ChatInterface({
+  onSendMessage,
+  isGenerating,
+  garments = [],
+  anchorIds = [],
+  onAnchorsChange,
+}: ChatInterfaceProps) {
   const { t, locale } = useTranslation()
   const idCounter = useRef(0)
   const [messages, setMessages] = useState<Message[]>([
@@ -184,13 +202,64 @@ export function ChatInterface({ onSendMessage, isGenerating }: ChatInterfaceProp
 
       {/* Input */}
       <div className="p-6 border-t border-[#E0D9CF]">
+        {onAnchorsChange && garments.length > 0 && (
+          <div className="max-w-[1000px] mx-auto mb-4">
+            <p className="text-[10px] tracking-[0.2em] uppercase text-[#6B6B6B] mb-1">
+              {t("chat.anchors.title")}
+            </p>
+            <p className="text-xs text-[#6B6B6B] mb-3">
+              {t("chat.anchors.hint", { max: MAX_ANCHORS })}
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <GarmentFilter
+                garments={garments}
+                selected={anchorIds}
+                onChange={onAnchorsChange}
+                max={MAX_ANCHORS}
+                showAll={false}
+                placeholder={t("chat.anchors.pick")}
+                className="w-full sm:w-[260px]"
+              />
+              {anchorIds.map((id) => {
+                const garment = garments.find((item) => item.id === id)
+                if (!garment) return null
+                return (
+                  <span
+                    key={id}
+                    className="inline-flex items-center gap-2 bg-[#EDE8E1] py-1 pl-1 pr-2 text-xs"
+                  >
+                    <span className="relative h-9 w-7 shrink-0 overflow-hidden bg-white">
+                      <Image
+                        src={garment.imageUrl}
+                        alt=""
+                        fill
+                        sizes="28px"
+                        className="object-contain"
+                      />
+                    </span>
+                    {garment.name}
+                    <button
+                      onClick={() =>
+                        onAnchorsChange(anchorIds.filter((item) => item !== id))
+                      }
+                      aria-label={t("chat.anchors.remove", { name: garment.name })}
+                      className="p-1 hover:bg-white/60"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )
+              })}
+            </div>
+          </div>
+        )}
         <div className="max-w-[1000px] mx-auto flex gap-4">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={t("chat.placeholder")}
+            placeholder={t(anchorIds.length > 0 ? "chat.anchors.placeholder" : "chat.placeholder")}
             className="input-elegant flex-1"
             disabled={isGenerating}
           />

@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ArrowLeft, Check } from "lucide-react"
 import { useTranslation } from "@/lib/i18n"
 import { ChatInterface } from "@/components/chat/chat-interface"
+import { useWardrobe } from "@/hooks/use-wardrobe"
 
 interface GeneratedOutfit {
   id: string
@@ -20,10 +21,13 @@ interface ChatMessage {
 export default function ChatPage() {
   const { t, locale } = useTranslation()
   const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedOutfit, setGeneratedOutfit] = useState<GeneratedOutfit | null>(null)
+  const [generatedOutfit, setGeneratedOutfit] =
+    useState<GeneratedOutfit | null>(null)
+  const { data: wardrobe = [] } = useWardrobe()
+  const [anchorIds, setAnchorIds] = useState<string[]>([])
 
   const handleSendMessage = async (
-    messages: ChatMessage[]
+    messages: ChatMessage[],
   ): Promise<{ type: "message" | "outfit"; message?: string }> => {
     setIsGenerating(true)
     try {
@@ -33,6 +37,7 @@ export default function ChatPage() {
         body: JSON.stringify({
           messages: messages.map(({ role, content }) => ({ role, content })),
           locale,
+          anchorIds,
         }),
       })
       const data = await res.json()
@@ -85,6 +90,9 @@ export default function ChatPage() {
         <ChatInterface
           onSendMessage={handleSendMessage}
           isGenerating={isGenerating}
+          garments={wardrobe}
+          anchorIds={anchorIds}
+          onAnchorsChange={setAnchorIds}
         />
       </div>
 
