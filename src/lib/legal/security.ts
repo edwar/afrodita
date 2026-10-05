@@ -14,6 +14,7 @@ export const SECURITY: LegalDocs = {
             list: [
               "Tu cuenta: nombre, correo electrónico y contraseña (guardada solo como hash, nunca en texto plano). Si entras con Google, recibimos de Google tu nombre, correo y foto de perfil; nunca vemos tu contraseña de Google.",
               "Tu sesión: identificador de sesión, fecha de expiración, dirección IP y tipo de navegador.",
+              "Tu suscripción: plan, estado, fecha del próximo cobro y consumo del mes. Los datos de pago los recibe Mercado Pago, no nosotros.",
               "Tu closet: las fotos de tus prendas y sus datos (nombre, categoría, color, material, marca y temporada).",
               "Tu foto base y los looks generados con ella.",
               "Tus pedidos al estilista: lo que pides para cada outfit y las combinaciones que te propone.",
@@ -41,6 +42,7 @@ export const SECURITY: LegalDocs = {
             list: [
               "Google (inicio de sesión con Google): verifica tu identidad cuando eliges entrar con tu cuenta de Google.",
               "Google (API de Gemini): recibe tus mensajes al estilista, los datos de tus prendas y tus valoraciones recientes para recomendarte looks; tu foto base para revisarla; y tu foto base junto con las fotos de las prendas del look para generar la imagen.",
+              "Mercado Pago: procesa los pagos de la suscripción; recibe tu correo y tus datos de pago.",
               "Neon: base de datos y almacenamiento privado de archivos (tus fotos y looks).",
               "Vercel: alojamiento de la aplicación.",
             ],
@@ -146,6 +148,7 @@ export const SECURITY: LegalDocs = {
             list: [
               "Your account: name, email address and password (stored only as a hash, never in plain text). If you sign in with Google, we receive your name, email and profile picture from Google; we never see your Google password.",
               "Your session: session identifier, expiry date, IP address and browser type.",
+              "Your subscription: plan, status, next charge date and this month's usage. Payment details go to Mercado Pago, not to us.",
               "Your closet: the photos of your garments and their details (name, category, color, material, brand and season).",
               "Your base photo and the looks generated from it.",
               "Your requests to the stylist: what you ask for in each outfit and the combinations it proposes.",
@@ -173,6 +176,7 @@ export const SECURITY: LegalDocs = {
             list: [
               "Google (Sign in with Google): verifies your identity when you choose to sign in with your Google account.",
               "Google (Gemini API): receives your messages to the stylist, your garments' details and your recent ratings to recommend looks; your base photo to review it; and your base photo together with the photos of the garments in a look to generate the image.",
+              "Mercado Pago: processes subscription payments; receives your email and payment details.",
               "Neon: database and private file storage (your photos and looks).",
               "Vercel: application hosting.",
             ],

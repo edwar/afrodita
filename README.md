@@ -35,6 +35,17 @@ Correo y contraseña, Google, o ambos sobre la misma cuenta (`better-auth`, `src
 - Los correos de las cuentas con contraseña no están verificados, así que Google **no se enlaza solo por coincidir el correo** (permitiría apropiarse de una cuenta ajena). El enlace es explícito, desde `/account`: quien entró con contraseña conecta Google, y quien entró con Google añade una contraseña.
 - Si alguien intenta entrar con Google con un correo que ya tiene cuenta con contraseña, vuelve a `/login?error=account_not_linked` con la explicación.
 
+### Planes y pagos
+
+Tres suscripciones mensuales (`src/lib/billing/plans.ts`): Básico $10, Estándar $25 y Pro $50 USD, con topes de looks con imagen por mes y por día, fotos base por mes, prendas por mes y tamaño del closet. Los topes salen del costo de un look (~US$0,07-0,11 con `gemini-3.1-flash-image`), así que ajústalos allí si cambia.
+
+- **Cobro**: Mercado Pago, suscripción recurrente (`/preapproval`). `POST /api/billing/checkout` crea la suscripción y devuelve la página de pago; el cliente paga allí. El estado llega por webhook (`POST /api/billing/webhook`), que consulta la API de Mercado Pago en lugar de fiarse del aviso, y se guarda en `Subscription`. El consumo del mes vive en `UsageMonth`.
+- **Cancelar** (`POST /api/billing/cancel`): detiene los cobros y conserva el plan hasta el final del mes pagado.
+- **Apagado por defecto**: sin `BILLING_ENABLED=true` no se aplica ningún plan y la app funciona como antes. `BILLING_EXEMPT_EMAILS` deja usar la app sin pagar (con topes Pro).
+- **Precio local**: se muestra en USD y se cobra en `MERCADOPAGO_CURRENCY` (COP) a `BILLING_USD_RATE`, o al valor de `PLAN_<PLAN>_PRICE_<MONEDA>`.
+- **Configuración**: crea una aplicación en Mercado Pago (Tus integraciones), copia el access token en `MERCADOPAGO_ACCESS_TOKEN` y registra `<BETTER_AUTH_URL>/api/billing/webhook` con el evento «Planes y suscripciones»; la clave secreta que te da va en `MERCADOPAGO_WEBHOOK_SECRET`. Aplica el esquema con `pnpm db:push` (tablas `Subscription` y `UsageMonth`).
+- Un plan no se puede cambiar a mitad de mes: se cancela y se elige otro al terminar el mes pagado.
+
 ### Probador con IA
 
 El probador (`src/lib/tryon/`, `src/components/tryon/`) genera una imagen del usuario con el outfit puesto:

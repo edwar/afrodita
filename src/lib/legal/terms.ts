@@ -95,6 +95,16 @@ export const TERMS: LegalDocs = {
         ],
       },
       {
+        id: "suscripciones",
+        heading: "Suscripciones y pagos",
+        body: [
+          "Para usar Afrodita se necesita un plan de pago mensual (Básico, Estándar o Pro). Cada plan incluye los topes mensuales y diarios que ves en la página de inicio y en Mi cuenta.",
+          "El cobro es recurrente, cada mes, a través de Mercado Pago. Los precios se muestran en dólares y se cobran en pesos colombianos por el valor que ves al contratar. Afrodita no guarda los datos de tu tarjeta: los gestiona Mercado Pago.",
+          "Puedes cancelar cuando quieras desde Mi cuenta. No se harán más cobros y conservas el plan hasta el final del mes ya pagado. Los meses ya cobrados no se devuelven, salvo que la ley aplicable lo exija.",
+          "Los topes se renuevan cada mes. Un look ya generado no vuelve a contar cuando lo abres de nuevo. Podemos cambiar los precios y los topes avisándote con anticipación; un cambio de precio se aplica desde el siguiente cobro.",
+        ],
+      },
+      {
         id: "disponibilidad",
         heading: "Disponibilidad",
         body: [
@@ -223,6 +233,16 @@ export const TERMS: LegalDocs = {
         heading: "Usage limits",
         body: [
           "To protect the service and keep its costs under control, there are daily limits per user, for example on the photos that get reviewed and the looks that get generated. We may adjust them.",
+        ],
+      },
+      {
+        id: "subscriptions",
+        heading: "Subscriptions and payments",
+        body: [
+          "Using Afrodita requires a paid monthly plan (Basic, Standard or Pro). Each plan includes the monthly and daily caps shown on the home page and in My account.",
+          "Billing is recurring, every month, through Mercado Pago. Prices are shown in US dollars and charged in Colombian pesos at the amount you see when you subscribe. Afrodita does not store your card details: Mercado Pago handles them.",
+          "You can cancel any time from My account. No further charges are made and you keep the plan until the end of the month you already paid for. Months already charged are not refunded, unless applicable law requires it.",
+          "Caps renew every month. A look that is already generated does not count again when you open it. We may change prices and caps with advance notice; a price change applies from the next charge.",
         ],
       },
       {
