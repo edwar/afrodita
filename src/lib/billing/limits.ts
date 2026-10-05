@@ -10,8 +10,9 @@ import { addUsage, getEntitlement, getUsage, type UsageField } from "./subscript
  */
 export class PlanLimitError extends TryOnError {}
 
-const NEEDS_PLAN =
-  "Necesitas un plan activo para usar esta función. Elígelo en Mi cuenta."
+// Los avisos de sileo no parten el texto en líneas: cada mensaje debe caber en
+// una pantalla de móvil (unos 45 caracteres)
+const NEEDS_PLAN = "Necesitas un plan activo. Elígelo en Mi cuenta."
 
 /** The user's plan, or null when billing is off. Throws when a plan is required and missing. */
 async function planFor(userId: string): Promise<Plan | null> {
@@ -27,10 +28,7 @@ export async function checkLookAllowance(userId: string): Promise<{ dailyLimit?:
   if (!plan) return {}
   const usage = await getUsage(userId)
   if (usage.looks >= plan.limits.looksPerMonth) {
-    throw new PlanLimitError(
-      `Usaste los ${plan.limits.looksPerMonth} looks de tu plan este mes. Se renuevan el próximo mes o puedes cambiar de plan.`,
-      429
-    )
+    throw new PlanLimitError("Llegaste al tope de looks de tu plan este mes.", 429)
   }
   return { dailyLimit: plan.limits.looksPerDay }
 }
@@ -41,10 +39,7 @@ export async function checkPhotoAllowance(userId: string): Promise<void> {
   if (!plan) return
   const usage = await getUsage(userId)
   if (usage.photoChanges >= plan.limits.photosPerMonth) {
-    throw new PlanLimitError(
-      `Ya subiste las ${plan.limits.photosPerMonth} fotos base de tu plan este mes.`,
-      429
-    )
+    throw new PlanLimitError("Ya subiste las fotos base de tu plan este mes.", 429)
   }
 }
 
@@ -57,16 +52,10 @@ export async function checkGarmentAllowance(userId: string): Promise<void> {
     prisma.wardrobe.count({ where: { userId } }),
   ])
   if (usage.garments >= plan.limits.garmentsPerMonth) {
-    throw new PlanLimitError(
-      `Ya cargaste las ${plan.limits.garmentsPerMonth} prendas de tu plan este mes.`,
-      429
-    )
+    throw new PlanLimitError("Ya cargaste las prendas de tu plan este mes.", 429)
   }
   if (closet >= plan.limits.closetMax) {
-    throw new PlanLimitError(
-      `Tu closet llegó al máximo de ${plan.limits.closetMax} prendas de tu plan.`,
-      429
-    )
+    throw new PlanLimitError("Tu closet llegó al máximo de tu plan.", 429)
   }
 }
 

@@ -162,44 +162,37 @@ input[type="number"] {
   color: var(--color-primary);
 }
 
-/* Sileo Toast Custom Styles */
-[data-sonner-toaster] {
-  font-family: var(--font-inter), -apple-system, sans-serif !important;
+/* Avisos (sileo): fondo oscuro, texto crema y esquinas rectas, como el resto de la app.
+   El fondo y la redondez se fijan en <Toaster> (providers.tsx); aquí, lo demás.
+   Los selectores llevan [data-sileo-viewport] para ganar a los estilos de la librería,
+   que se insertan en tiempo de ejecución. */
+:root:root {
+  --sileo-state-success: #C9B99A;
+  --sileo-state-error: #E8998A;
+  --sileo-state-warning: #C9B99A;
+  --sileo-state-info: #F8F5F0;
+  --sileo-state-loading: #9A9488;
 }
 
-[data-sonner-toast] {
-  background: #1A1A1A !important;
-  color: #F8F5F0 !important;
-  border: none !important;
-  border-radius: 0 !important;
-  font-size: 13px !important;
-  letter-spacing: 0.02em !important;
+[data-sileo-viewport] {
+  font-family: var(--font-inter), -apple-system, sans-serif;
 }
 
-[data-sonner-toast][data-type="error"] {
-  background: #1A1A1A !important;
-  color: #F8F5F0 !important;
+/* El estado lo cuenta el icono; el texto va siempre en crema y como frase normal */
+[data-sileo-viewport] [data-sileo-title] {
+  color: #F8F5F0;
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: none;
 }
 
-[data-sonner-toast][data-type="success"] {
-  background: #1A1A1A !important;
-  color: #C9B99A !important;
+[data-sileo-viewport] [data-sileo-description] {
+  color: rgba(248, 245, 240, 0.6);
+  font-size: 12px;
 }
 
-[data-sonner-toast][data-type="warning"] {
-  background: #1A1A1A !important;
-  color: #F8F5F0 !important;
-}
-
-[data-sonner-toast][data-type="info"] {
-  background: #1A1A1A !important;
-  color: #F8F5F0 !important;
-}
-
-[data-sonner-toast] [data-close-button] {
-  color: #6B6B6B !important;
-}
-
-[data-sonner-toast] [data-close-button]:hover {
-  color: #F8F5F0 !important;
+[data-sileo-viewport] [data-sileo-badge],
+[data-sileo-viewport] [data-sileo-button] {
+  border-radius: 0;
 }
