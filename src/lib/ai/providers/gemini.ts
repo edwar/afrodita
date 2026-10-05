@@ -4,23 +4,18 @@ import {
   ChatResponse,
   OutfitRequest,
   OutfitResponse,
-  OutfitOption,
-  WardrobeItem,
 } from "../types"
 import { hasValidApiKey } from "../env"
 import {
+  buildAnchorsSection,
   buildWardrobeList,
+  mapItemIds,
   buildConversationalSystemPrompt,
   buildOutfitSystemPrompt,
 } from "../prompts"
 
-function mapItemIds(
-  itemIds: string[] | undefined,
-  wardrobe: WardrobeItem[]
-): OutfitOption["items"] {
-  if (!itemIds) return []
-  return wardrobe.filter((item) => itemIds.includes(item.id))
-}
+// gemini-2.0-flash y 2.5-flash fueron retirados; se puede cambiar sin tocar código
+const CHAT_MODEL = process.env.GEMINI_CHAT_MODEL || "gemini-3.8-flash"
 
 export class GeminiProvider implements AIProvider {
   name = "gemini"
@@ -38,10 +33,13 @@ export class GeminiProvider implements AIProvider {
 
   private async callGemini(prompt: string): Promise<{ text: string; tokens: number }> {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${this.apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${CHAT_MODEL}:generateContent`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": this.apiKey,
+        },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
@@ -101,7 +99,7 @@ Genera 3 opciones de outfit usando las prendas listadas.`
 
     return {
       options,
-      modelUsed: "gemini-2.0-flash",
+      modelUsed: CHAT_MODEL,
       tokensUsed: tokens,
     }
   }
@@ -120,7 +118,7 @@ ${conversation}
 PRENDAS DISPONIBLES EN EL CLOSET DEL USUARIO:
 ${wardrobeList}
 
-Responde al último mensaje del usuario siguiendo las instrucciones del sistema.`
+${buildAnchorsSection(request.anchors)}Responde al último mensaje del usuario siguiendo las instrucciones del sistema.`
 
     const { text, tokens } = await this.callGemini(
       `${systemPrompt}\n\n${userPrompt}`
@@ -139,7 +137,7 @@ Responde al último mensaje del usuario siguiendo las instrucciones del sistema.
         type: "outfit",
         message: parsed.message,
         options,
-        modelUsed: "gemini-2.0-flash",
+        modelUsed: CHAT_MODEL,
         tokensUsed: tokens,
       }
     }
@@ -147,7 +145,7 @@ Responde al último mensaje del usuario siguiendo las instrucciones del sistema.
     return {
       type: "message",
       message: parsed.message || text.replace(/```json|```/g, "").trim(),
-      modelUsed: "gemini-2.0-flash",
+      modelUsed: CHAT_MODEL,
       tokensUsed: tokens,
     }
   }

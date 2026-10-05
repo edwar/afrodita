@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getAIOrchestrator } from "@/lib/ai"
 import type { ChatMessage } from "@/lib/ai"
+import { MAX_ANCHORS, ensureAnchors } from "@/lib/ai/prompts"
 import { prisma } from "@/lib/prisma"
 import { requireUserId, unauthorized } from "@/lib/require-user"
 
@@ -10,7 +11,7 @@ export async function POST(request: Request) {
     if (!userId) return unauthorized()
 
     const body = await request.json()
-    const { messages, locale } = body
+    const { messages, locale, anchorIds } = body
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(
@@ -41,12 +42,25 @@ export async function POST(request: Request) {
       imageUrl: item.imageUrl,
     }))
 
+    // Only garments the user owns count as base garments
+    const wantedAnchors = Array.isArray(anchorIds)
+      ? new Set(anchorIds.map(String))
+      : new Set<string>()
+    const anchors = wardrobeItems
+      .filter((item) => wantedAnchors.has(item.id))
+      .slice(0, MAX_ANCHORS)
+
     const orchestrator = getAIOrchestrator()
     const response = await orchestrator.chat({
       messages: chatMessages,
       wardrobe: wardrobeItems,
+      anchors,
       locale: locale === "en" ? "en" : "es",
     })
+    // Whatever the model answered, every option wears the chosen garments
+    if (response.options) {
+      response.options = ensureAnchors(response.options, anchors)
+    }
 
     if (response.type === "message") {
       return NextResponse.json({
@@ -71,6 +85,22 @@ export async function POST(request: Request) {
       chatMessages.filter((m) => m.role === "user").pop()?.content || ""
 
     const wardrobeIds = new Set(wardrobe.map((item) => item.id))
+    // An outfit whose options link to no garment cannot be shown or tried on
+    const linked = (response.options || []).filter((opt) =>
+      opt.items.some((item) => wardrobeIds.has(item.id))
+    )
+    if (linked.length === 0) {
+      return NextResponse.json({
+        type: "message",
+        message:
+          locale === "en"
+            ? "I couldn't build outfits from the garments in your closet. Try again, or add more garments."
+            : "No pude armar outfits con las prendas de tu closet. Intenta de nuevo o agrega más prendas.",
+        modelUsed: response.modelUsed,
+        tokensUsed: response.tokensUsed,
+      })
+    }
+
     const outfit = await prisma.outfit.create({
       data: {
         userId,

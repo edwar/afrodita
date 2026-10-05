@@ -65,7 +65,7 @@ function groupByBucket(wardrobe: WardrobeItem[]): Record<string, WardrobeItem[]>
   for (const item of wardrobe) {
     const group = bucket(item)
     if (!group) continue
-    ;(groups[group] ||= []).push(item)
+      ; (groups[group] ||= []).push(item)
   }
   return groups
 }
@@ -99,22 +99,22 @@ const LOOKS: {
   description: string
   slots: string[]
 }[] = [
-  {
-    title: "Look casual de diario",
-    description: "Combinación relajada y funcional para salir, estudiar o trabajar sin perder estilo.",
-    slots: ["bottom", "top", "shoes"],
-  },
-  {
-    title: "Look con capas",
-    description: "Capas ligeras que dan estructura al conjunto y funcionan si cambia la temperatura.",
-    slots: ["bottom", "top", "outer", "acc"],
-  },
-  {
-    title: "Look completo",
-    description: "Outfit armado de punta a punta, listo para una cita o una tarde con amigos.",
-    slots: ["top", "bottom", "shoes", "acc", "outer"],
-  },
-]
+    {
+      title: "Look casual de diario",
+      description: "Combinación relajada y funcional para salir, estudiar o trabajar sin perder estilo.",
+      slots: ["bottom", "top", "shoes"],
+    },
+    {
+      title: "Look con capas",
+      description: "Capas ligeras que dan estructura al conjunto y funcionan si cambia la temperatura.",
+      slots: ["bottom", "top", "outer", "acc"],
+    },
+    {
+      title: "Look completo",
+      description: "Outfit armado de punta a punta, listo para una cita o una tarde con amigos.",
+      slots: ["top", "bottom", "shoes", "acc", "outer"],
+    },
+  ]
 
 function generateOutfits(wardrobe: WardrobeItem[]): OutfitOption[] {
   const groups = groupByBucket(wardrobe)
@@ -164,8 +164,8 @@ export class FallbackProvider implements AIProvider {
       return {
         type: "message",
         message: isEn
-          ? "Hi! 👋 I'm your personal stylist. I'd love to help you find the perfect look. What are you dressing for today? (work, a date, a special event, the gym...)"
-          : "¡Hola! 👋 Soy tu estilista personal. Me encantaría ayudarte a encontrar el look perfecto. ¿Para qué ocasión te vistes hoy? (trabajo, una cita, un evento especial, el gimnasio...)",
+          ? "Hi! 👋 I'm your image consultant. I'd love to help you find the perfect look. What are you dressing for today? (work, a date, a special event, the gym...)"
+          : "¡Hola! 👋 Soy tu asesor de imagen. Me encantaría ayudarte a encontrar el look perfecto. ¿Para qué ocasión te vistes hoy? (trabajo, una cita, un evento especial, el gimnasio...)",
         modelUsed: "local-fallback",
         tokensUsed: 0,
       }

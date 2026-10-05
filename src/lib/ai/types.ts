@@ -25,6 +25,8 @@ export interface OutfitRequest {
 export interface ChatRequest {
   messages: ChatMessage[]
   wardrobe: WardrobeItem[]
+  /** Garments the user chose to build the outfits around (at most 2). */
+  anchors?: WardrobeItem[]
   locale?: "es" | "en"
 }
 
