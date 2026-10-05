@@ -8,6 +8,7 @@ import { LanguageSwitcher } from "@/components/language-switcher"
 import { SessionNavLinks } from "@/components/auth/session-nav-links"
 import { useAuth } from "@/components/auth-provider"
 import { FaqSection } from "@/components/faq-section"
+import { PricingSection } from "@/components/landing/pricing-section"
 
 export default function LandingPage() {
   const { t } = useTranslation()
@@ -238,6 +239,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <PricingSection />
 
       <FaqSection />
 

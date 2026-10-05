@@ -8,6 +8,7 @@ import { sileo } from "sileo"
 import { useTranslation } from "@/lib/i18n"
 import { linkSocial } from "@/lib/auth-client"
 import { authErrorKey } from "@/lib/auth-errors"
+import { PlanSection } from "@/components/billing/plan-section"
 import { PasswordInput } from "@/components/ui/password-input"
 import {
   PasswordValidator,
@@ -246,6 +247,8 @@ function AccountContent() {
           )}
         </Method>
       </div>
+
+      <PlanSection />
     </>
   )
 }

@@ -409,6 +409,64 @@
     "googleOff": "Connect your Google account to sign in with one click. It must have the same email as this account.",
     "googleUnavailable": "Signing in with Google is not available right now.",
     "connectGoogle": "Connect Google",
-    "googleLinked": "Google is now connected to your account."
+    "googleLinked": "Google is now connected to your account.",
+    "plan": {
+      "title": "Subscription",
+      "none": "No active plan",
+      "noneDesc": "Choose a plan to generate looks and add garments.",
+      "current": "{plan} plan",
+      "renews": "Renews on {date}.",
+      "cancelledUntil": "Cancelled. You keep access until {date}.",
+      "cancelledNoDate": "Cancelled. You keep access until the month you paid for ends.",
+      "paused": "Your payments are paused. Resume them from Mercado Pago.",
+      "usage": "This month's usage",
+      "usageLooks": "Looks with an image",
+      "usagePhotos": "Base photos",
+      "usageGarments": "Garments added",
+      "subscribe": "Subscribe",
+      "charge": "Charged {amount} {currency} per month",
+      "cancel": "Cancel subscription",
+      "cancelTitle": "Cancel your subscription?",
+      "cancelDesc": "You will not be charged again. You keep your plan until the month you already paid for ends.",
+      "cancelConfirm": "Yes, cancel",
+      "keep": "Keep my plan",
+      "cancelled": "Subscription cancelled.",
+      "confirming": "We are confirming your payment…",
+      "unavailable": "Payments are not available yet.",
+      "changeHint": "To switch plans, cancel the current one and choose another when your paid month ends."
+    }
+  },
+  "pricing": {
+    "eyebrow": "Plans",
+    "title1": "Choose your",
+    "title2": "plan",
+    "description": "Monthly subscription with automatic billing. Cancel any time: you keep your plan until the end of the month you paid for.",
+    "perMonth": "per month",
+    "popular": "Most popular",
+    "cta": "Get started",
+    "billingNote": "Prices in US dollars. You are charged in Colombian pesos through Mercado Pago.",
+    "cacheNote": "A look that is already generated does not count again when you open it.",
+    "plans": {
+      "basic": {
+        "name": "Basic",
+        "tagline": "To try the fitting room and put together the week's looks."
+      },
+      "standard": {
+        "name": "Standard",
+        "tagline": "To refresh your image often."
+      },
+      "pro": {
+        "name": "Pro",
+        "tagline": "For those who dress with Afrodita every day."
+      }
+    },
+    "features": {
+      "looks": "{n} looks with an image per month",
+      "looksDay": "Up to {n} looks per day",
+      "photos": "{n} base photos per month",
+      "garments": "{n} new garments per month",
+      "closet": "Closet of up to {n} garments",
+      "stylist": "AI image advisor included"
+    }
   }
 }

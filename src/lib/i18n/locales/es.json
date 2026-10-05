@@ -409,6 +409,64 @@
     "googleOff": "Conecta tu cuenta de Google para entrar con un clic. Debe tener el mismo correo que esta cuenta.",
     "googleUnavailable": "Entrar con Google no está disponible por ahora.",
     "connectGoogle": "Conectar Google",
-    "googleLinked": "Google quedó conectado a tu cuenta."
+    "googleLinked": "Google quedó conectado a tu cuenta.",
+    "plan": {
+      "title": "Suscripción",
+      "none": "Sin plan activo",
+      "noneDesc": "Elige un plan para generar looks y cargar prendas.",
+      "current": "Plan {plan}",
+      "renews": "Se renueva el {date}.",
+      "cancelledUntil": "Cancelado. Conservas el acceso hasta el {date}.",
+      "cancelledNoDate": "Cancelado. Conservas el acceso hasta que termine el mes pagado.",
+      "paused": "Tus pagos están en pausa. Reactívalos desde Mercado Pago.",
+      "usage": "Consumo de este mes",
+      "usageLooks": "Looks con imagen",
+      "usagePhotos": "Fotos base",
+      "usageGarments": "Prendas cargadas",
+      "subscribe": "Suscribirme",
+      "charge": "Se cobra {amount} {currency} al mes",
+      "cancel": "Cancelar suscripción",
+      "cancelTitle": "¿Cancelar tu suscripción?",
+      "cancelDesc": "No se harán más cobros. Conservas tu plan hasta que termine el mes ya pagado.",
+      "cancelConfirm": "Sí, cancelar",
+      "keep": "Mantener mi plan",
+      "cancelled": "Suscripción cancelada.",
+      "confirming": "Estamos confirmando tu pago…",
+      "unavailable": "Los pagos aún no están disponibles.",
+      "changeHint": "Para cambiar de plan, cancela el actual y elige otro cuando termine tu mes pagado."
+    }
+  },
+  "pricing": {
+    "eyebrow": "Planes",
+    "title1": "Elige tu",
+    "title2": "plan",
+    "description": "Suscripción mensual con cobro automático. Cancela cuando quieras: conservas tu plan hasta el final del mes pagado.",
+    "perMonth": "al mes",
+    "popular": "Más elegido",
+    "cta": "Empezar",
+    "billingNote": "Precios en dólares. El cobro se hace en pesos colombianos a través de Mercado Pago.",
+    "cacheNote": "Un look ya generado no vuelve a contar cuando lo abres de nuevo.",
+    "plans": {
+      "basic": {
+        "name": "Básico",
+        "tagline": "Para probar el probador y armar los looks de la semana."
+      },
+      "standard": {
+        "name": "Estándar",
+        "tagline": "Para renovar tu imagen con frecuencia."
+      },
+      "pro": {
+        "name": "Pro",
+        "tagline": "Para quien se viste con Afrodita todos los días."
+      }
+    },
+    "features": {
+      "looks": "{n} looks con imagen al mes",
+      "looksDay": "Hasta {n} looks por día",
+      "photos": "{n} fotos base al mes",
+      "garments": "{n} prendas nuevas al mes",
+      "closet": "Closet de hasta {n} prendas",
+      "stylist": "Asesor de imagen con IA incluido"
+    }
   }
 }
