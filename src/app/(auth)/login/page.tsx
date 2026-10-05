@@ -9,6 +9,8 @@ import { useTranslation } from "@/lib/i18n"
 import { sileo } from "sileo"
 import { PasswordInput } from "@/components/ui/password-input"
 import { LanguageSwitcher } from "@/components/language-switcher"
+import { GoogleSignIn } from "@/components/auth/google-sign-in"
+import { authErrorKey } from "@/lib/auth-errors"
 
 function LoginForm() {
   const { t } = useTranslation()
@@ -18,6 +20,8 @@ function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  // A failed Google sign-in comes back here with ?error=<code>
+  const errorKey = authErrorKey(searchParams.get("error"))
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,6 +58,12 @@ function LoginForm() {
   }
 
   return (
+    <>
+    {errorKey && (
+      <p role="alert" className="mb-6 border-l-2 border-[#1A1A1A] bg-[#EDE8E1] p-4 text-sm leading-relaxed">
+        {t(errorKey)}
+      </p>
+    )}
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label className="block text-[10px] tracking-[0.2em] uppercase text-[#6B6B6B] mb-2">
@@ -94,6 +104,8 @@ function LoginForm() {
         )}
       </button>
     </form>
+    <GoogleSignIn callbackUrl={callbackUrl} />
+    </>
   )
 }
 

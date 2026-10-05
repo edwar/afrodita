@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-const PROTECTED_PAGE_PREFIXES = ["/wardrobe", "/chat", "/preview", "/looks"]
+const PROTECTED_PAGE_PREFIXES = ["/wardrobe", "/chat", "/preview", "/looks", "/account"]
 const PUBLIC_API_PREFIXES = ["/api/auth"]
 
 // better-auth renombra la cookie con prefijo seguro cuando el baseURL es https

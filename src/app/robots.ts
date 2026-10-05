@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       // API y rutas privadas (auth/dashboard) no aportan valor de indexación
-      disallow: ["/api/", "/wardrobe", "/chat", "/preview", "/looks", "/login", "/register"],
+      disallow: ["/api/", "/wardrobe", "/chat", "/preview", "/looks", "/account", "/login", "/register"],
     },
     sitemap: `${getSiteUrl().origin}/sitemap.xml`,
   }

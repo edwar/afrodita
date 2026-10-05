@@ -12,6 +12,7 @@ import {
   validatePassword,
 } from "@/components/ui/password-validator"
 import { LanguageSwitcher } from "@/components/language-switcher"
+import { GoogleSignIn } from "@/components/auth/google-sign-in"
 
 export default function RegisterPage() {
   const { t } = useTranslation()
@@ -158,6 +159,8 @@ export default function RegisterPage() {
               )}
             </button>
           </form>
+
+          <GoogleSignIn callbackUrl="/wardrobe" />
 
           <p className="mt-6 text-center text-xs leading-relaxed text-[#6B6B6B]">
             {t("auth.legal.prefix")}{" "}

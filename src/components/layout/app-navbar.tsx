@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { UserRound } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { useAuth } from "@/components/auth-provider"
@@ -57,9 +58,22 @@ export function AppNavbar() {
           </Link>
 
           {user && (
-            <span className="text-[11px] tracking-[0.15em] uppercase text-[#6B6B6B] hidden lg:block max-w-[180px] truncate">
-              {user.name || user.email}
-            </span>
+            <Link
+              href="/account"
+              title={t("nav.account")}
+              aria-label={t("nav.account")}
+              className={`flex items-center text-[11px] tracking-[0.15em] uppercase transition-colors ${
+                isActive(pathname, "/account")
+                  ? "text-[#1A1A1A]"
+                  : "text-[#6B6B6B] hover:text-[#1A1A1A]"
+              }`}
+            >
+              {/* Small screens have no room for the name: an icon reaches the same page */}
+              <UserRound className="h-4 w-4 lg:hidden" />
+              <span className="hidden max-w-[180px] truncate lg:block">
+                {user.name || user.email}
+              </span>
+            </Link>
           )}
 
           {!loading && user && (

@@ -10,7 +10,8 @@
     "logout": "Log out",
     "closet": "My Closet",
     "stylist": "Image consultant",
-    "looks": "My looks"
+    "looks": "My looks",
+    "account": "My account"
   },
   "landing": {
     "hero": {
@@ -114,6 +115,16 @@
       "terms": "Terms and conditions",
       "and": "and the",
       "security": "Security and privacy policy"
+    },
+    "or": "or",
+    "continueWithGoogle": "Continue with Google",
+    "googleHint": "If you already have an account with this email, sign in with your password and connect Google from My account.",
+    "errors": {
+      "accountNotLinked": "An account with this email already exists, created with a password. Sign in with your password and connect Google from My account; that joins them.",
+      "emailDoesNotMatch": "The email of that Google account is different from your Afrodita account's. Choose the Google account with the same email.",
+      "alreadyLinked": "That Google account is already connected to another Afrodita account.",
+      "cancelled": "You cancelled the sign-in with Google.",
+      "generic": "We could not complete the sign-in with Google. Please try again."
     }
   },
   "wardrobe": {
@@ -380,5 +391,24 @@
     "eyebrow": "Frequently asked questions",
     "title": "What people ask",
     "policyLink": "Read the security and privacy policy"
+  },
+  "account": {
+    "eyebrow": "Your account",
+    "title": "My account",
+    "signedInAs": "Signed in as",
+    "on": "On",
+    "off": "Off",
+    "bothOn": "You can sign in with your password or with Google: both lead to this same account.",
+    "onlyOne": "Turn on the other method to be able to sign in either way with this same account.",
+    "methodPassword": "Password",
+    "passwordOn": "You can sign in with your email and password.",
+    "passwordOff": "Your account signs in with Google. Add a password if you also want to sign in with your email.",
+    "addPassword": "Add password",
+    "passwordSaved": "Password added",
+    "googleOn": "You can sign in with the \"Continue with Google\" button.",
+    "googleOff": "Connect your Google account to sign in with one click. It must have the same email as this account.",
+    "googleUnavailable": "Signing in with Google is not available right now.",
+    "connectGoogle": "Connect Google",
+    "googleLinked": "Google is now connected to your account."
   }
 }

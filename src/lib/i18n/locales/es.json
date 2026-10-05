@@ -10,7 +10,8 @@
     "logout": "Cerrar sesión",
     "closet": "Mi Closet",
     "stylist": "Asesor de Imagen",
-    "looks": "Mis looks"
+    "looks": "Mis looks",
+    "account": "Mi cuenta"
   },
   "landing": {
     "hero": {
@@ -114,6 +115,16 @@
       "terms": "Términos y condiciones",
       "and": "y la",
       "security": "Política de seguridad y privacidad"
+    },
+    "or": "o",
+    "continueWithGoogle": "Continuar con Google",
+    "googleHint": "Si ya tienes una cuenta con este correo, entra con tu contraseña y conecta Google desde Mi cuenta.",
+    "errors": {
+      "accountNotLinked": "Ya existe una cuenta con este correo creada con contraseña. Inicia sesión con tu contraseña y conecta Google desde Mi cuenta; así quedan unidas.",
+      "emailDoesNotMatch": "El correo de esa cuenta de Google es distinto al de tu cuenta de Afrodita. Elige la cuenta de Google con el mismo correo.",
+      "alreadyLinked": "Esa cuenta de Google ya está conectada a otra cuenta de Afrodita.",
+      "cancelled": "Cancelaste el acceso con Google.",
+      "generic": "No pudimos completar el acceso con Google. Intenta de nuevo."
     }
   },
   "wardrobe": {
@@ -380,5 +391,24 @@
     "eyebrow": "Preguntas frecuentes",
     "title": "Lo que suelen preguntar",
     "policyLink": "Lee la política de seguridad y privacidad"
+  },
+  "account": {
+    "eyebrow": "Tu cuenta",
+    "title": "Mi cuenta",
+    "signedInAs": "Sesión iniciada como",
+    "on": "Activo",
+    "off": "Sin activar",
+    "bothOn": "Puedes entrar con tu contraseña o con Google: las dos llevan a esta misma cuenta.",
+    "onlyOne": "Activa el otro método para poder entrar de las dos formas con esta misma cuenta.",
+    "methodPassword": "Contraseña",
+    "passwordOn": "Puedes entrar con tu correo y tu contraseña.",
+    "passwordOff": "Tu cuenta usa Google para entrar. Añade una contraseña si quieres poder entrar también con tu correo.",
+    "addPassword": "Añadir contraseña",
+    "passwordSaved": "Contraseña añadida",
+    "googleOn": "Puedes entrar con el botón «Continuar con Google».",
+    "googleOff": "Conecta tu cuenta de Google para entrar con un clic. Debe tener el mismo correo que esta cuenta.",
+    "googleUnavailable": "Entrar con Google no está disponible por ahora.",
+    "connectGoogle": "Conectar Google",
+    "googleLinked": "Google quedó conectado a tu cuenta."
   }
 }
