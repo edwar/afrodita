@@ -5,6 +5,8 @@ import { X, Upload, Loader2 } from "lucide-react"
 import { WARDROBE_CATEGORIES, WARDROBE_COLORS, WARDROBE_SEASONS } from "@/lib/constants"
 import { useTranslation } from "@/lib/i18n"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ImageCropDialog, useCropPick } from "@/components/ui/image-crop-dialog"
+import { CROP_MAX_SIDE, GARMENT_ASPECTS } from "@/components/tryon/crop-presets"
 
 interface WardrobeItem {
   id: string
@@ -37,6 +39,9 @@ export function WardrobeForm({ item, onClose, onSubmit }: WardrobeFormProps) {
     season: item?.season || "todo",
     imageUrl: item?.imageUrl || "",
   })
+
+  const pick = useCropPick()
+  const { choose } = pick
 
   const uploadFile = async (file: File) => {
     setIsUploading(true)
@@ -80,19 +85,21 @@ export function WardrobeForm({ item, onClose, onSubmit }: WardrobeFormProps) {
     if (files && files.length > 0) {
       const file = files[0]
       if (file.type.startsWith("image/")) {
-        uploadFile(file)
+        choose(file)
       }
     }
-  }, [])
+  }, [choose])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files && files.length > 0) {
       const file = files[0]
       if (file.type.startsWith("image/")) {
-        uploadFile(file)
+        choose(file)
       }
     }
+    // Lets the same file be chosen again after cancelling
+    e.target.value = ""
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -101,6 +108,7 @@ export function WardrobeForm({ item, onClose, onSubmit }: WardrobeFormProps) {
   }
 
   return (
+    <>
     <div className="fixed inset-0 bg-[#1A1A1A]/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-[#F8F5F0] w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
@@ -328,5 +336,22 @@ export function WardrobeForm({ item, onClose, onSubmit }: WardrobeFormProps) {
         </form>
       </div>
     </div>
+    <ImageCropDialog
+      picked={pick.picked}
+      title={t("crop.garmentTitle")}
+      hint={t("crop.garmentHint")}
+      aspects={GARMENT_ASPECTS}
+      maxSide={CROP_MAX_SIDE}
+      onCancel={pick.clear}
+      onConfirm={(image) => {
+        pick.clear()
+        uploadFile(
+          image instanceof File
+            ? image
+            : new File([image], "prenda.jpg", { type: "image/jpeg" }),
+        )
+      }}
+    />
+    </>
   )
 }

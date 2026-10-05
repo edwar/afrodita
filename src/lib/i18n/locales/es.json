@@ -333,5 +333,19 @@
       "combination": "La combinación no me convence",
       "overused": "Ya lo usé mucho"
     }
+  },
+  "crop": {
+    "photoTitle": "Recorta tu foto",
+    "photoHint": "Encuadra tu cuerpo, de la cabeza a los pies si puedes. Quita lo que sobre a los lados.",
+    "garmentTitle": "Recorta la prenda",
+    "garmentHint": "Deja solo la prenda, sin fondo ni otras cosas alrededor.",
+    "portrait23": "Vertical 2:3",
+    "portrait34": "Vertical 3:4",
+    "square": "Cuadrado 1:1",
+    "free": "Libre",
+    "confirm": "Usar recorte",
+    "skip": "Sin recortar",
+    "unreadable": "Este navegador no puede mostrar esta imagen (por ejemplo, un HEIC), así que no se puede recortar aquí. Puedes subirla tal como está.",
+    "uploadOriginal": "Subir sin recortar"
   }
 }

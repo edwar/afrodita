@@ -26,6 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { ImageCropDialog, useCropPick } from "@/components/ui/image-crop-dialog"
+import { CROP_MAX_SIDE, PHOTO_ASPECTS } from "./crop-presets"
 import { DislikeDialog } from "./dislike-dialog"
 import { PhotoConsentDialog } from "./photo-consent-dialog"
 import { GarmentFilter } from "./garment-filter"
@@ -651,6 +653,7 @@ function PhotoCard({ hasPhoto }: { hasPhoto: boolean }) {
   const failure = upload.error ?? remove.error
   const [confirming, setConfirming] = useState<TryOnAction | null>(null)
   const [consenting, setConsenting] = useState(false)
+  const pick = useCropPick()
 
   return (
     <div className="flex items-center gap-4 self-start border border-[#E0D9CF] bg-white p-3 md:self-auto">
@@ -662,7 +665,7 @@ function PhotoCard({ hasPhoto }: { hasPhoto: boolean }) {
         onChange={(event) => {
           const file = event.target.files?.[0]
           event.target.value = ""
-          if (file) upload.mutate(file)
+          if (file) pick.choose(file)
         }}
       />
       <div className="relative h-20 w-16 shrink-0 overflow-hidden bg-[#EDE8E1]">
@@ -732,6 +735,18 @@ function PhotoCard({ hasPhoto }: { hasPhoto: boolean }) {
         onAccept={() => {
           setConsenting(false)
           fileInput.current?.click()
+        }}
+      />
+      <ImageCropDialog
+        picked={pick.picked}
+        title={t("crop.photoTitle")}
+        hint={t("crop.photoHint")}
+        aspects={PHOTO_ASPECTS}
+        maxSide={CROP_MAX_SIDE}
+        onCancel={pick.clear}
+        onConfirm={(image) => {
+          pick.clear()
+          upload.mutate(image)
         }}
       />
     </div>

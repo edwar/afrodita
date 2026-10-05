@@ -5,6 +5,8 @@ import Image from "next/image"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ImagePlus, Loader2, RefreshCw, Sparkles, Trash2 } from "lucide-react"
 import { useTranslation } from "@/lib/i18n"
+import { ImageCropDialog, useCropPick } from "@/components/ui/image-crop-dialog"
+import { CROP_MAX_SIDE, PHOTO_ASPECTS } from "./crop-presets"
 import { PhotoConsentDialog } from "./photo-consent-dialog"
 import { TryOnConfirm, type TryOnAction } from "./try-on-confirm"
 import { readJson, useTryOnPhoto } from "./use-try-on-photo"
@@ -41,6 +43,7 @@ export function OutfitTryOn({
   const [photoVersion, setPhotoVersion] = useState(0)
   const [confirming, setConfirming] = useState<TryOnAction | null>(null)
   const [consenting, setConsenting] = useState(false)
+  const pick = useCropPick()
   // Width / height of the picture on screen. The frame takes exactly this
   // shape, so the picture fills it with no bars at the sides.
   const [ratio, setRatio] = useState(2 / 3)
@@ -108,7 +111,7 @@ export function OutfitTryOn({
         event.target.value = ""
         if (file) {
           generate.reset()
-          upload.mutate(file)
+          pick.choose(file)
         }
       }}
     />
@@ -161,6 +164,18 @@ export function OutfitTryOn({
           onAccept={() => {
             setConsenting(false)
             fileInput.current?.click()
+          }}
+        />
+        <ImageCropDialog
+          picked={pick.picked}
+          title={t("crop.photoTitle")}
+          hint={t("crop.photoHint")}
+          aspects={PHOTO_ASPECTS}
+          maxSide={CROP_MAX_SIDE}
+          onCancel={pick.clear}
+          onConfirm={(image) => {
+            pick.clear()
+            upload.mutate(image)
           }}
         />
       </div>
@@ -285,6 +300,18 @@ export function OutfitTryOn({
         onAccept={() => {
           setConsenting(false)
           fileInput.current?.click()
+        }}
+      />
+      <ImageCropDialog
+        picked={pick.picked}
+        title={t("crop.photoTitle")}
+        hint={t("crop.photoHint")}
+        aspects={PHOTO_ASPECTS}
+        maxSide={CROP_MAX_SIDE}
+        onCancel={pick.clear}
+        onConfirm={(image) => {
+          pick.clear()
+          upload.mutate(image)
         }}
       />
       <TryOnConfirm

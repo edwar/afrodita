@@ -333,5 +333,19 @@
       "combination": "I'm not convinced by the combination",
       "overused": "I've worn it a lot"
     }
+  },
+  "crop": {
+    "photoTitle": "Crop your photo",
+    "photoHint": "Frame your body, head to toe if you can. Remove what is left over at the sides.",
+    "garmentTitle": "Crop the garment",
+    "garmentHint": "Leave only the garment, with no background or other things around it.",
+    "portrait23": "Portrait 2:3",
+    "portrait34": "Portrait 3:4",
+    "square": "Square 1:1",
+    "free": "Free",
+    "confirm": "Use crop",
+    "skip": "Don't crop",
+    "unreadable": "This browser cannot display this image (for example, a HEIC), so it cannot be cropped here. You can upload it as it is.",
+    "uploadOriginal": "Upload without cropping"
   }
 }

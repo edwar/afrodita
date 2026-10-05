@@ -12,7 +12,7 @@ export async function readJson<T>(response: Response): Promise<T> {
 }
 
 /** Downsizes in the browser: phone photos are far larger than needed. */
-async function shrinkPhoto(file: File): Promise<Blob> {
+async function shrinkPhoto(file: Blob): Promise<Blob> {
   try {
     const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" })
     const scale = Math.min(1, UPLOAD_MAX_SIDE / Math.max(bitmap.width, bitmap.height))
@@ -46,9 +46,11 @@ export function useTryOnPhoto(onChange?: () => void) {
   }
 
   const upload = useMutation({
-    mutationFn: async (file: File) => {
+    // A File is the user's original; a plain Blob already went through the
+    // crop step, which sized it, so it is sent as it is.
+    mutationFn: async (photo: File | Blob) => {
       const form = new FormData()
-      form.append("file", await shrinkPhoto(file), "photo.jpg")
+      form.append("file", photo instanceof File ? await shrinkPhoto(photo) : photo, "photo.jpg")
       // Uploading is only reachable through the consent dialog
       form.append("consent", "true")
       return readJson(await fetch("/api/tryon/photo", { method: "PUT", body: form }))
