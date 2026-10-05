@@ -20,6 +20,8 @@ model User {
   account       Account[]
   wardrobe      Wardrobe[]
   outfits       Outfit[]
+  subscription  Subscription?
+  usage         UsageMonth[]
 }
 
 model Session {
@@ -112,4 +114,33 @@ model OutfitOption {
   outfit    Outfit   @relation(fields: [outfitId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+}
+
+// Suscripción de pago (Mercado Pago). Una por usuario.
+model Subscription {
+  id               String    @id @default(cuid())
+  userId           String    @unique
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan             String    // basic | standard | pro
+  status           String    // pending | active | paused | cancelled
+  mpPreapprovalId  String    @unique
+  payerEmail       String?
+  // Próximo cobro. Una suscripción cancelada conserva el acceso hasta esta fecha.
+  currentPeriodEnd DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+// Consumo del mes (UTC, "YYYY-MM") para aplicar los topes del plan.
+model UsageMonth {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  period       String
+  looks        Int      @default(0)
+  photoChanges Int      @default(0)
+  garments     Int      @default(0)
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, period])
 }

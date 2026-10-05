@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireUserId, unauthorized } from "@/lib/require-user"
+import { PlanLimitError, checkGarmentAllowance, recordUsage } from "@/lib/billing/limits"
 
 export const maxDuration = 300
 
@@ -45,6 +46,8 @@ export async function POST(request: Request) {
       )
     }
 
+    await checkGarmentAllowance(userId)
+
     const wardrobe = await prisma.wardrobe.create({
       data: {
         name,
@@ -58,8 +61,12 @@ export async function POST(request: Request) {
       },
     })
 
+    await recordUsage(userId, "garments")
     return NextResponse.json(wardrobe, { status: 201 })
   } catch (error) {
+    if (error instanceof PlanLimitError) {
+      return NextResponse.json({ error: error.message }, { status: error.status })
+    }
     console.error("POST /api/wardrobe failed:", error)
     const message = error instanceof Error ? error.message : "Error desconocido"
     return NextResponse.json(

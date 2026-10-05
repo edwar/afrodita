@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 
 const PROTECTED_PAGE_PREFIXES = ["/wardrobe", "/chat", "/preview", "/looks", "/account"]
-const PUBLIC_API_PREFIXES = ["/api/auth"]
+// El webhook lo llama Mercado Pago, sin sesión: se valida por firma y consultando su API
+const PUBLIC_API_PREFIXES = ["/api/auth", "/api/billing/webhook"]
 
 // better-auth renombra la cookie con prefijo seguro cuando el baseURL es https
 // (__Secure-better-auth.session_token). El proxy debe reconocer ambos, o entra

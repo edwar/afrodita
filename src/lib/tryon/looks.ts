@@ -15,6 +15,11 @@
 import { createHash } from "node:crypto"
 import sharp from "sharp"
 import {
+  checkLookAllowance,
+  checkPhotoAllowance,
+  recordUsage,
+} from "@/lib/billing/limits"
+import {
   deleteObject,
   getImageObject,
   getObject,
@@ -139,6 +144,8 @@ export async function savePhoto(
     throw new TryOnError("No se pudo leer la imagen. Usa un JPG o PNG.", 400)
   }
 
+  await checkPhotoAllowance(userId)
+
   const attempts = await readCount(photoChecksKey(userId))
   if (attempts >= photoCheckLimit()) {
     throw new TryOnError(
@@ -160,6 +167,7 @@ export async function savePhoto(
   }
 
   await putObject(photoKey(userId), normalized, "image/jpeg")
+  await recordUsage(userId, "photoChanges")
   // Record of when the conditions were accepted, and which version
   await putObject(
     consentKey(userId),
@@ -388,8 +396,10 @@ export async function generateLook(
   }
   if (state.image?.current && !regenerate) return state
 
+  // With plans, the plan sets the daily cap; the monthly one is checked here too
+  const allowance = await checkLookAllowance(userId)
   const used = await generationsToday(userId)
-  if (used >= dailyLimit()) {
+  if (used >= (allowance.dailyLimit ?? dailyLimit())) {
     throw new TryOnError(
       "Alcanzaste el límite diario de looks generados. Vuelve a intentarlo mañana.",
       429
@@ -426,6 +436,7 @@ export async function generateLook(
   const key = `${lookPrefix(userId)}${state.hash}-${photoTag(index.photoVersion)}.jpg`
   await putObject(key, jpeg, "image/jpeg")
   await recordGeneration(userId, used)
+  await recordUsage(userId, "looks")
 
   // One image per look: drop the ones this replaces
   const replaced = (index.stored.get(state.hash) ?? []).filter((look) => look.key !== key)
