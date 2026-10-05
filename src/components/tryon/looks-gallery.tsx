@@ -12,6 +12,7 @@ import {
   Loader2,
   RefreshCw,
   Search,
+  ThumbsDown,
   Trash2,
   X,
 } from "lucide-react"
@@ -25,11 +26,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { DislikeDialog } from "./dislike-dialog"
+import { PhotoConsentDialog } from "./photo-consent-dialog"
 import { GarmentFilter } from "./garment-filter"
 import { LookCompare, MAX_COMPARED } from "./look-compare"
 import { GarmentCollage, type Garment, type Look } from "./look-parts"
 import { OutfitTryOn } from "./outfit-try-on"
 import { TryOnConfirm, type TryOnAction } from "./try-on-confirm"
+import type { Reason, Vote } from "@/lib/tryon/feedback-core"
 import { readJson, useTryOnPhoto } from "./use-try-on-photo"
 
 interface LooksResponse {
@@ -69,6 +73,8 @@ export function LooksGallery() {
   const [openId, setOpenId] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<Look | null>(null)
   const [onlyLiked, setOnlyLiked] = useState(false)
+  const [hideDisliked, setHideDisliked] = useState(false)
+  const [disliking, setDisliking] = useState<Look | null>(null)
   // Comparison: `picking` turns cards into checkboxes, `picked` are the
   // chosen looks, `comparing` shows them side by side.
   const [picking, setPicking] = useState(false)
@@ -89,17 +95,25 @@ export function LooksGallery() {
   }
   const queryClient = useQueryClient()
 
-  const like = useMutation({
-    mutationFn: async ({ look, liked }: { look: Look; liked: boolean }) =>
+  const vote = useMutation({
+    mutationFn: async ({
+      look,
+      vote,
+      reasons = [],
+    }: {
+      look: Look
+      vote: Vote | null
+      reasons?: Reason[]
+    }) =>
       readJson(
-        await fetch(`/api/looks/${look.optionId}/like`, {
+        await fetch(`/api/looks/${look.optionId}/feedback`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ liked }),
+          body: JSON.stringify({ vote, reasons }),
         }),
       ),
     // Shown at once; rolled back if the server refuses
-    onMutate: async ({ look, liked }) => {
+    onMutate: async ({ look, vote, reasons = [] }) => {
       await queryClient.cancelQueries({ queryKey: ["looks"] })
       const previous = queryClient.getQueryData<LooksResponse>(["looks"])
       const key = lookKeyOf(look)
@@ -109,7 +123,9 @@ export function LooksGallery() {
           current && {
             ...current,
             looks: current.looks.map((item) =>
-              lookKeyOf(item) === key ? { ...item, liked } : item,
+              lookKeyOf(item) === key
+                ? { ...item, vote, reasons: vote === "dislike" ? reasons : [] }
+                : item,
             ),
           },
       )
@@ -120,7 +136,13 @@ export function LooksGallery() {
       sileo.error({ title: failure.message })
     },
   })
-  const toggleLike = (look: Look) => like.mutate({ look, liked: !look.liked })
+  const toggleLike = (look: Look) =>
+    vote.mutate({ look, vote: look.vote === "like" ? null : "like" })
+  // Rejecting asks why first; taking the rejection back needs no question
+  const toggleDislike = (look: Look) =>
+    look.vote === "dislike"
+      ? vote.mutate({ look, vote: null })
+      : setDisliking(look)
 
   const remove = useMutation({
     mutationFn: async (optionId: string) =>
@@ -152,7 +174,8 @@ export function LooksGallery() {
 
   const query = search.trim().toLowerCase()
   const visible = looks.filter((look) => {
-    if (onlyLiked && !look.liked) return false
+    if (onlyLiked && look.vote !== "like") return false
+    if (hideDisliked && look.vote === "dislike") return false
     if (images === "generated" && !look.imageUrl) return false
     if (images === "pending" && look.imageUrl) return false
     // Several garments widen the search: any look wearing one of them shows
@@ -213,64 +236,85 @@ export function LooksGallery() {
         </div>
       ) : (
         <>
-          <div className="mb-12 flex flex-col gap-4 border-b border-[#E0D9CF] pb-8 lg:flex-row">
-            <div className="relative max-w-md flex-1">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B6B6B]" />
-              <input
-                type="text"
-                placeholder={t("looks.search")}
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                className="input-elegant w-full !pl-12"
+          <div className="mb-12 space-y-4 border-b border-[#E0D9CF] pb-8">
+            {/* Row 1: find looks */}
+            <div className="flex flex-col gap-4 lg:flex-row">
+              <div className="relative max-w-md flex-1">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B6B6B]" />
+                <input
+                  type="text"
+                  placeholder={t("looks.search")}
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  className="input-elegant w-full !pl-12"
+                />
+              </div>
+              <GarmentFilter
+                garments={garments}
+                selected={selectedGarments}
+                onChange={setSelectedGarments}
+                className="w-full lg:w-[240px]"
               />
+              <Select
+                value={images}
+                onValueChange={(value) => setImages(value as ImageFilter)}
+              >
+                <SelectTrigger className="w-full lg:w-[220px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("looks.filterAll")}</SelectItem>
+                  <SelectItem value="generated">
+                    {t("looks.filterGenerated")}
+                  </SelectItem>
+                  <SelectItem value="pending">
+                    {t("looks.filterPending")}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <GarmentFilter
-              garments={garments}
-              selected={selectedGarments}
-              onChange={setSelectedGarments}
-              className="w-full lg:w-[240px]"
-            />
-            <Select
-              value={images}
-              onValueChange={(value) => setImages(value as ImageFilter)}
-            >
-              <SelectTrigger className="w-full lg:w-[220px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("looks.filterAll")}</SelectItem>
-                <SelectItem value="generated">
-                  {t("looks.filterGenerated")}
-                </SelectItem>
-                <SelectItem value="pending">
-                  {t("looks.filterPending")}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <button
-              onClick={() => setOnlyLiked((value) => !value)}
-              aria-pressed={onlyLiked}
-              className={`inline-flex items-center justify-center gap-2 border px-4 py-2 text-xs uppercase tracking-[0.15em] transition-colors ${
-                onlyLiked
-                  ? "border-[#1A1A1A] bg-[#1A1A1A] text-white"
-                  : "border-[#E0D9CF] text-[#1A1A1A] hover:border-[#1A1A1A]"
-              }`}
-            >
-              <Heart className={`h-4 w-4 ${onlyLiked ? "fill-current" : ""}`} />
-              {t("looks.onlyLiked")}
-            </button>
-            <button
-              onClick={() => (picking ? stopPicking() : setPicking(true))}
-              aria-pressed={picking}
-              className={`inline-flex items-center justify-center gap-2 border px-4 py-2 text-xs uppercase tracking-[0.15em] transition-colors ${
-                picking
-                  ? "border-[#1A1A1A] bg-[#1A1A1A] text-white"
-                  : "border-[#E0D9CF] text-[#1A1A1A] hover:border-[#1A1A1A]"
-              }`}
-            >
-              <Columns3 className="h-4 w-4" />
-              {t("looks.compare")}
-            </button>
+
+            {/* Row 2: narrow down and act */}
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => setOnlyLiked((value) => !value)}
+                aria-pressed={onlyLiked}
+                className={`inline-flex items-center justify-center gap-2 border px-4 py-2 text-xs uppercase tracking-[0.15em] transition-colors ${
+                  onlyLiked
+                    ? "border-[#1A1A1A] bg-[#1A1A1A] text-white"
+                    : "border-[#E0D9CF] text-[#1A1A1A] hover:border-[#1A1A1A]"
+                }`}
+              >
+                <Heart
+                  className={`h-4 w-4 ${onlyLiked ? "fill-current" : ""}`}
+                />
+                {t("looks.onlyLiked")}
+              </button>
+              <button
+                onClick={() => setHideDisliked((value) => !value)}
+                aria-pressed={hideDisliked}
+                className={`inline-flex items-center justify-center gap-2 border px-4 py-2 text-xs uppercase tracking-[0.15em] transition-colors ${
+                  hideDisliked
+                    ? "border-[#1A1A1A] bg-[#1A1A1A] text-white"
+                    : "border-[#E0D9CF] text-[#1A1A1A] hover:border-[#1A1A1A]"
+                }`}
+              >
+                <ThumbsDown className="h-4 w-4" />
+                {t("looks.hideDisliked")}
+              </button>
+              <button
+                onClick={() => (picking ? stopPicking() : setPicking(true))}
+                aria-pressed={picking}
+                className={`inline-flex items-center justify-center gap-2 border px-4 py-2 text-xs uppercase tracking-[0.15em] transition-colors ${
+                  picking
+                    ? "border-[#1A1A1A] bg-[#1A1A1A] text-white"
+                    : "border-[#E0D9CF] text-[#1A1A1A] hover:border-[#1A1A1A]"
+                }`}
+              >
+                <Columns3 className="h-4 w-4" />
+                {t("looks.compare")}
+              </button>
+            </div>
           </div>
 
           {visible.length === 0 ? (
@@ -285,7 +329,7 @@ export function LooksGallery() {
                 return (
                   <div
                     key={look.optionId}
-                    className={`group relative ${picking && full ? "opacity-40" : ""}`}
+                    className={`group relative ${picking && full ? "opacity-40" : ""} ${look.vote === "dislike" && !picking ? "opacity-50 transition-opacity hover:opacity-100" : ""}`}
                   >
                     {picking ? (
                       <span
@@ -302,16 +346,45 @@ export function LooksGallery() {
                         <button
                           onClick={() => toggleLike(look)}
                           aria-label={t(
-                            look.liked ? "looks.unlike" : "looks.like",
+                            look.vote === "like"
+                              ? "looks.unlike"
+                              : "looks.like",
                           )}
-                          aria-pressed={look.liked}
-                          title={t(look.liked ? "looks.unlike" : "looks.like")}
+                          aria-pressed={look.vote === "like"}
+                          title={t(
+                            look.vote === "like"
+                              ? "looks.unlike"
+                              : "looks.like",
+                          )}
                           className={`absolute left-3 top-3 z-10 bg-white/90 p-2 text-[#1A1A1A] transition-opacity hover:bg-white focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100 ${
-                            look.liked ? "opacity-100" : "opacity-0"
+                            look.vote === "like" ? "opacity-100" : "opacity-0"
                           }`}
                         >
                           <Heart
-                            className={`h-4 w-4 ${look.liked ? "fill-current" : ""}`}
+                            className={`h-4 w-4 ${look.vote === "like" ? "fill-current" : ""}`}
+                          />
+                        </button>
+                        <button
+                          onClick={() => toggleDislike(look)}
+                          aria-label={t(
+                            look.vote === "dislike"
+                              ? "looks.undislike"
+                              : "looks.dislike",
+                          )}
+                          aria-pressed={look.vote === "dislike"}
+                          title={t(
+                            look.vote === "dislike"
+                              ? "looks.undislike"
+                              : "looks.dislike",
+                          )}
+                          className={`absolute left-14 top-3 z-10 bg-white/90 p-2 text-[#1A1A1A] transition-opacity hover:bg-white focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100 ${
+                            look.vote === "dislike"
+                              ? "opacity-100"
+                              : "opacity-0"
+                          }`}
+                        >
+                          <ThumbsDown
+                            className={`h-4 w-4 ${look.vote === "dislike" ? "fill-current" : ""}`}
                           />
                         </button>
                         <button
@@ -427,8 +500,19 @@ export function LooksGallery() {
           onClose={() => setOpenId(null)}
           onDelete={() => setDeleting(open)}
           onToggleLike={() => toggleLike(open)}
+          onToggleDislike={() => toggleDislike(open)}
         />
       )}
+
+      <DislikeDialog
+        lookTitle={disliking?.title ?? null}
+        onCancel={() => setDisliking(null)}
+        onConfirm={(reasons) => {
+          if (disliking)
+            vote.mutate({ look: disliking, vote: "dislike", reasons })
+          setDisliking(null)
+        }}
+      />
 
       <ConfirmDialog
         open={deleting !== null}
@@ -453,11 +537,13 @@ function LookDialog({
   onClose,
   onDelete,
   onToggleLike,
+  onToggleDislike,
 }: {
   look: Look
   onClose: () => void
   onDelete: () => void
   onToggleLike: () => void
+  onToggleDislike: () => void
 }) {
   const { t } = useTranslation()
 
@@ -517,13 +603,29 @@ function LookDialog({
         <div className="mt-6 flex items-center gap-6 text-xs text-[#6B6B6B]">
           <button
             onClick={onToggleLike}
-            aria-pressed={look.liked}
+            aria-pressed={look.vote === "like"}
             className={`inline-flex items-center gap-1.5 underline-offset-4 hover:underline ${
-              look.liked ? "text-[#1A1A1A]" : "hover:text-[#1A1A1A]"
+              look.vote === "like" ? "text-[#1A1A1A]" : "hover:text-[#1A1A1A]"
             }`}
           >
-            <Heart className={`h-3 w-3 ${look.liked ? "fill-current" : ""}`} />
-            {t(look.liked ? "looks.unlike" : "looks.like")}
+            <Heart
+              className={`h-3 w-3 ${look.vote === "like" ? "fill-current" : ""}`}
+            />
+            {t(look.vote === "like" ? "looks.unlike" : "looks.like")}
+          </button>
+          <button
+            onClick={onToggleDislike}
+            aria-pressed={look.vote === "dislike"}
+            className={`inline-flex items-center gap-1.5 underline-offset-4 hover:underline ${
+              look.vote === "dislike"
+                ? "text-[#1A1A1A]"
+                : "hover:text-[#1A1A1A]"
+            }`}
+          >
+            <ThumbsDown
+              className={`h-3 w-3 ${look.vote === "dislike" ? "fill-current" : ""}`}
+            />
+            {t(look.vote === "dislike" ? "looks.undislike" : "looks.dislike")}
           </button>
           <button
             onClick={onDelete}
@@ -548,6 +650,7 @@ function PhotoCard({ hasPhoto }: { hasPhoto: boolean }) {
   )
   const failure = upload.error ?? remove.error
   const [confirming, setConfirming] = useState<TryOnAction | null>(null)
+  const [consenting, setConsenting] = useState(false)
 
   return (
     <div className="flex items-center gap-4 self-start border border-[#E0D9CF] bg-white p-3 md:self-auto">
@@ -594,7 +697,7 @@ function PhotoCard({ hasPhoto }: { hasPhoto: boolean }) {
           <button
             // Replacing a photo asks first; a first upload replaces nothing
             onClick={() =>
-              hasPhoto ? setConfirming("change") : fileInput.current?.click()
+              hasPhoto ? setConfirming("change") : setConsenting(true)
             }
             disabled={busy}
             className="inline-flex items-center gap-1.5 underline-offset-4 hover:underline disabled:opacity-50"
@@ -620,7 +723,15 @@ function PhotoCard({ hasPhoto }: { hasPhoto: boolean }) {
         onConfirm={(action) => {
           setConfirming(null)
           if (action === "delete") remove.mutate()
-          else fileInput.current?.click()
+          else setConsenting(true)
+        }}
+      />
+      <PhotoConsentDialog
+        open={consenting}
+        onCancel={() => setConsenting(false)}
+        onAccept={() => {
+          setConsenting(false)
+          fileInput.current?.click()
         }}
       />
     </div>

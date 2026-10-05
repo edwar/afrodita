@@ -32,6 +32,7 @@ pnpm dev
 El probador (`src/lib/tryon/`, `src/components/tryon/`) genera una imagen del usuario con el outfit puesto:
 
 - **Foto base**: el usuario sube una foto de cuerpo entero (`PUT /api/tryon/photo`). Se guarda privada en el bucket, bajo `tryon/<userId>/`, y puede eliminarla junto con todos sus looks (`DELETE`).
+- **Revisión de la foto antes de guardarla** (`photo-check.ts`): el usuario confirma unas condiciones (es él, mayor de 18, vestido) y Gemini describe la foto (personas, desnudez, edad aparente, contenido dañino, cuánto cuerpo se ve). Las reglas de decisión viven en el código, no en el modelo. Se permite ropa interior, traje de baño y torso descubierto en hombres; se rechaza desnudez o contenido sexual, menores aparentes, contenido dañino, ninguna o varias personas y fotos de solo la cara. **Falla cerrado**: si no se puede revisar, la foto no se guarda. Lo rechazado nunca llega al bucket ni queda registrado; solo el motivo en el log. Tope de intentos por usuario y día (`PHOTO_CHECK_DAILY_LIMIT`, 15 por defecto). La fecha y versión de las condiciones aceptadas se guardan en `tryon/<user>/consent.json`.
 - **Generación**: `POST /api/tryon/looks/[optionId]` envía a Gemini la foto y las fotos de las prendas de esa opción en una sola llamada (`gemini.ts`). Requiere `GEMINI_API_KEY`; el modelo se puede cambiar con `GEMINI_IMAGE_MODEL`.
 - **Caché**: cada look se guarda con un hash de la foto y las prendas, así que solo se paga una vez por combinación. Hay un tope por usuario y día (`TRYON_DAILY_LIMIT`, 20 por defecto).
 

@@ -110,12 +110,12 @@ export function LookCompare({
                 </h3>
                 <button
                   onClick={() => onToggleLike(look)}
-                  aria-label={t(look.liked ? "looks.unlike" : "looks.like")}
-                  aria-pressed={look.liked}
+                  aria-label={t(look.vote === "like" ? "looks.unlike" : "looks.like")}
+                  aria-pressed={look.vote === "like"}
                   className="shrink-0 p-1 text-[#1A1A1A]"
                 >
                   <Heart
-                    className={`h-4 w-4 ${look.liked ? "fill-current" : ""}`}
+                    className={`h-4 w-4 ${look.vote === "like" ? "fill-current" : ""}`}
                   />
                 </button>
               </div>

@@ -275,6 +275,16 @@
         "description": "Se eliminará tu foto. Los looks que ya generaste se conservan, pero no podrás generar ni actualizar looks hasta que subas otra foto.",
         "confirm": "Eliminar foto"
       }
+    },
+    "consent": {
+      "title": "Antes de subir tu foto",
+      "intro": "Para cuidar a todos, tu foto debe cumplir estas condiciones:",
+      "itself": "Eres tú en la foto, y sales solo tú.",
+      "adult": "Tienes 18 años o más.",
+      "clothed": "Llevas ropa puesta: sin desnudez ni contenido sexual, violento o ilegal.",
+      "review": "La revisamos automáticamente con IA antes de guardarla; si no cumple las condiciones, no se guarda. Después se envía a Google Gemini para generar tus looks.",
+      "confirm": "Confirmo que mi foto cumple estas condiciones",
+      "continue": "Elegir foto"
     }
   },
   "looks": {
@@ -309,6 +319,19 @@
     "comparePick": "Elige de 2 a {max} looks para comparar · {count} seleccionados",
     "compareCancel": "Cancelar",
     "compareShared": "En todos",
-    "compareOpen": "Abrir este look"
+    "compareOpen": "Abrir este look",
+    "dislike": "No me gusta",
+    "undislike": "Quitar «no me gusta»",
+    "hideDisliked": "Ocultar descartados",
+    "dislikeTitle": "¿Qué no te convenció?",
+    "dislikeHint": "Es opcional y ayuda al estilista a aprender tu gusto. Este look no se volverá a proponer.",
+    "dislikeConfirm": "Descartar look",
+    "reasons": {
+      "colors": "Los colores no combinan",
+      "too_formal": "Demasiado formal",
+      "too_casual": "Demasiado informal",
+      "combination": "La combinación no me convence",
+      "overused": "Ya lo usé mucho"
+    }
   }
 }

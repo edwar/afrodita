@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import type { Reason, Vote } from "@/lib/tryon/feedback-core"
 
 export interface Garment {
   id: string
@@ -21,7 +22,10 @@ export interface Look {
   imageUrl: string | null
   /** Made from a photo the user has since changed or deleted. */
   outdated: boolean
-  liked: boolean
+  /** What the user thinks of it: liked, rejected, or nothing yet. */
+  vote: Vote | null
+  /** Why it was rejected (only for "dislike"). */
+  reasons: Reason[]
 }
 
 /** Stand-in for a look without a generated image: its garments, tiled. */

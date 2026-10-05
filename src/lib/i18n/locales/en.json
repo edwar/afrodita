@@ -275,6 +275,16 @@
         "description": "Your photo will be deleted. The looks you already generated are kept, but you will not be able to generate or update looks until you upload another photo.",
         "confirm": "Delete photo"
       }
+    },
+    "consent": {
+      "title": "Before you upload your photo",
+      "intro": "To keep everyone safe, your photo must meet these conditions:",
+      "itself": "It is you in the photo, and you are alone.",
+      "adult": "You are 18 or older.",
+      "clothed": "You are wearing clothes: no nudity and nothing sexual, violent or illegal.",
+      "review": "We review it automatically with AI before saving it; if it does not meet the conditions, it is not saved. It is then sent to Google Gemini to generate your looks.",
+      "confirm": "I confirm my photo meets these conditions",
+      "continue": "Choose photo"
     }
   },
   "looks": {
@@ -309,6 +319,19 @@
     "comparePick": "Pick 2 to {max} looks to compare · {count} selected",
     "compareCancel": "Cancel",
     "compareShared": "In all",
-    "compareOpen": "Open this look"
+    "compareOpen": "Open this look",
+    "dislike": "Dislike",
+    "undislike": "Remove dislike",
+    "hideDisliked": "Hide rejected",
+    "dislikeTitle": "What didn't work for you?",
+    "dislikeHint": "Optional, and it helps the stylist learn your taste. This look will not be proposed again.",
+    "dislikeConfirm": "Reject look",
+    "reasons": {
+      "colors": "Colors don't match",
+      "too_formal": "Too formal",
+      "too_casual": "Too casual",
+      "combination": "I'm not convinced by the combination",
+      "overused": "I've worn it a lot"
+    }
   }
 }

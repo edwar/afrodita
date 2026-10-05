@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ImagePlus, Loader2, RefreshCw, Sparkles, Trash2 } from "lucide-react"
 import { useTranslation } from "@/lib/i18n"
+import { PhotoConsentDialog } from "./photo-consent-dialog"
 import { TryOnConfirm, type TryOnAction } from "./try-on-confirm"
 import { readJson, useTryOnPhoto } from "./use-try-on-photo"
 
@@ -39,6 +40,7 @@ export function OutfitTryOn({
   // Busts the browser cache of the photo URL after it is replaced
   const [photoVersion, setPhotoVersion] = useState(0)
   const [confirming, setConfirming] = useState<TryOnAction | null>(null)
+  const [consenting, setConsenting] = useState(false)
   // Width / height of the picture on screen. The frame takes exactly this
   // shape, so the picture fills it with no bars at the sides.
   const [ratio, setRatio] = useState(2 / 3)
@@ -90,7 +92,7 @@ export function OutfitTryOn({
   const run = (action: TryOnAction) => {
     setConfirming(null)
     if (action === "delete") remove.mutate()
-    else if (action === "change") fileInput.current?.click()
+    else if (action === "change") setConsenting(true)
     else generate.mutate(true)
   }
   const failure = generate.error ?? upload.error ?? remove.error ?? status.error
@@ -142,7 +144,7 @@ export function OutfitTryOn({
           </p>
         </div>
         <button
-          onClick={() => fileInput.current?.click()}
+          onClick={() => setConsenting(true)}
           disabled={busy}
           className="btn-fashion inline-flex items-center gap-2 disabled:opacity-60"
         >
@@ -153,6 +155,14 @@ export function OutfitTryOn({
           {t("tryon.privacy")}
         </p>
         {failure && <p className="text-xs text-red-700">{failure.message}</p>}
+        <PhotoConsentDialog
+          open={consenting}
+          onCancel={() => setConsenting(false)}
+          onAccept={() => {
+            setConsenting(false)
+            fileInput.current?.click()
+          }}
+        />
       </div>
     )
   }
@@ -258,7 +268,7 @@ export function OutfitTryOn({
           ) : (
             // Uploading with no photo replaces nothing: no confirmation needed
             <button
-              onClick={() => fileInput.current?.click()}
+              onClick={() => setConsenting(true)}
               disabled={busy}
               className="inline-flex items-center gap-1.5 underline-offset-4 hover:underline disabled:opacity-50"
             >
@@ -269,6 +279,14 @@ export function OutfitTryOn({
         </span>
       </div>
 
+      <PhotoConsentDialog
+        open={consenting}
+        onCancel={() => setConsenting(false)}
+        onAccept={() => {
+          setConsenting(false)
+          fileInput.current?.click()
+        }}
+      />
       <TryOnConfirm
         action={confirming}
         onCancel={() => setConfirming(null)}
