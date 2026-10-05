@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { requireUser, unauthorized } from "@/lib/require-user"
 import { billingEnabled, currency, localPrice, mercadoPagoConfigured } from "@/lib/billing/config"
 import { PLAN_IDS } from "@/lib/billing/plans"
-import { getEntitlement, getUsage } from "@/lib/billing/subscription"
+import { getEntitlement, getUsage, syncUserSubscription } from "@/lib/billing/subscription"
 
 /** Plan, consumption and prices of the signed-in user. */
 export async function GET(request: Request) {
@@ -18,10 +18,23 @@ export async function GET(request: Request) {
   }
   if (!base.enabled) return NextResponse.json({ ...base, plan: null })
 
-  const [entitlement, usage] = await Promise.all([
-    getEntitlement(user.id),
-    getUsage(user.id),
-  ])
+  // Mi cuenta asks to catch up with Mercado Pago, but only while there is no
+  // plan: someone who already has one costs no extra call
+  let entitlement = await getEntitlement(user.id)
+  if (
+    new URL(request.url).searchParams.get("sync") === "1" &&
+    entitlement.enforced &&
+    !entitlement.plan &&
+    base.configured
+  ) {
+    try {
+      await syncUserSubscription(user.id, user.email)
+      entitlement = await getEntitlement(user.id)
+    } catch (error) {
+      console.error("[api/billing/status] sync failed:", error)
+    }
+  }
+  const usage = await getUsage(user.id)
   if (!entitlement.enforced) return NextResponse.json({ ...base, plan: null })
   return NextResponse.json({
     ...base,

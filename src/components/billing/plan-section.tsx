@@ -56,10 +56,16 @@ export function PlanSection() {
   const returning = searchParams.get("checkout") === "return"
 
   const { data } = useQuery({
-    queryKey: ["billing"],
-    queryFn: () => fetch("/api/billing/status").then((r) => readJson<BillingStatus>(r)),
-    // Coming back from paying, the webhook can take a few seconds to arrive
-    refetchInterval: (query) => (returning && !query.state.data?.plan ? 3000 : false),
+    queryKey: ["billing", "account"],
+    // sync=1: if there is no plan yet, the server checks Mercado Pago itself, so a
+    // payment made a moment ago shows up even if the webhook is late
+    queryFn: () =>
+      fetch("/api/billing/status?sync=1").then((r) => readJson<BillingStatus>(r)),
+    // Coming back from paying it can take a few seconds: retry a handful of times
+    refetchInterval: (query) =>
+      returning && !query.state.data?.plan && query.state.dataUpdateCount < 10
+        ? 3000
+        : false,
   })
 
   const checkout = useMutation({

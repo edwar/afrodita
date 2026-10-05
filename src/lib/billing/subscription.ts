@@ -4,6 +4,7 @@ import { PLANS, type Plan } from "./plans"
 import {
   mapStatus,
   parseReference,
+  searchPreapprovals,
   type Preapproval,
   type SubscriptionStatus,
 } from "./mercadopago"
@@ -74,6 +75,24 @@ export async function syncPreapproval(preapproval: Preapproval): Promise<boolean
     update: data,
   })
   return true
+}
+
+/**
+ * Asks Mercado Pago for the user's subscriptions and stores the one that
+ * counts: an authorized one if there is any, else the newest. The webhook does
+ * this too, but it can be late or never arrive, and someone who just paid
+ * should not have to wait for it.
+ */
+export async function syncUserSubscription(userId: string, email: string): Promise<void> {
+  const mine = (await searchPreapprovals(email)).filter(
+    (preapproval) => parseReference(preapproval.external_reference)?.userId === userId
+  )
+  if (mine.length === 0) return
+  const newest = [...mine].sort((a, b) =>
+    (b.date_created ?? "").localeCompare(a.date_created ?? "")
+  )
+  const best = newest.find((preapproval) => preapproval.status === "authorized") ?? newest[0]
+  await syncPreapproval(best)
 }
 
 // --- Monthly usage ------------------------------------------------------------

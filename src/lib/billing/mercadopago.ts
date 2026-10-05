@@ -20,6 +20,7 @@ export interface Preapproval {
   external_reference?: string
   payer_email?: string
   next_payment_date?: string
+  date_created?: string
   init_point?: string
 }
 
@@ -86,6 +87,14 @@ export const cancelPreapproval = (id: string) =>
     method: "PUT",
     body: JSON.stringify({ status: "cancelled" }),
   })
+
+/** Subscriptions of a payer, newest first. Used to catch up when a webhook never came. */
+export async function searchPreapprovals(payerEmail: string): Promise<Preapproval[]> {
+  const result = await mp<{ results?: Preapproval[] }>(
+    `/preapproval/search?payer_email=${encodeURIComponent(payerEmail)}&limit=20`
+  )
+  return result.results ?? []
+}
 
 /** The id of the subscription a recurring charge belongs to. */
 export async function preapprovalOfPayment(paymentId: string): Promise<string | null> {
