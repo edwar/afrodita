@@ -44,6 +44,7 @@ Tres suscripciones mensuales (`src/lib/billing/plans.ts`): Básico $10, Estánda
 - **Apagado por defecto**: sin `BILLING_ENABLED=true` no se aplica ningún plan y la app funciona como antes. `BILLING_EXEMPT_EMAILS` deja usar la app sin pagar (con topes Pro).
 - **Precio local**: se muestra en USD y se cobra en `MERCADOPAGO_CURRENCY` (COP) a `BILLING_USD_RATE`, o al valor de `PLAN_<PLAN>_PRICE_<MONEDA>`.
 - **Configuración**: crea una aplicación en Mercado Pago (Tus integraciones), copia el access token en `MERCADOPAGO_ACCESS_TOKEN` y registra `<BETTER_AUTH_URL>/api/billing/webhook` con el evento «Planes y suscripciones»; la clave secreta que te da va en `MERCADOPAGO_WEBHOOK_SECRET`. Aplica el esquema con `pnpm db:push` (tablas `Subscription` y `UsageMonth`).
+- **Crédito de Gemini**: la facturación es prepago. Si el crédito llega a cero, el cliente ve «Servicio no disponible ahora» (503) y en los registros de Vercel queda `GEMINI_SIN_CREDITO`; con una clave inválida, `GEMINI_CLAVE_INVALIDA`. Un look que falla no cuenta contra el tope del cliente. `TRYON_GLOBAL_MONTHLY_LIMIT` pone un tope a los looks de todos los clientes en el mes (con billing activo), para acotar la factura; al alcanzarlo queda `TRYON_GLOBAL_MONTHLY_LIMIT alcanzado` en los registros. Búscalos con `vercel logs --project afrodita --environment production --query GEMINI_SIN_CREDITO`.
 - Un plan no se puede cambiar a mitad de mes: se cancela y se elige otro al terminar el mes pagado.
 
 ### Probador con IA

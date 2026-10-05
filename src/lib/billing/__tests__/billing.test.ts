@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 const prismaMock = vi.hoisted(() => ({
   user: { findUnique: vi.fn() },
   subscription: { findUnique: vi.fn(), upsert: vi.fn() },
-  usageMonth: { findUnique: vi.fn(), upsert: vi.fn() },
+  usageMonth: { findUnique: vi.fn(), upsert: vi.fn(), aggregate: vi.fn() },
   wardrobe: { count: vi.fn() },
 }))
 vi.mock("@/lib/prisma", () => ({ prisma: prismaMock }))
@@ -14,6 +14,7 @@ import {
   checkGarmentAllowance,
   checkLookAllowance,
   checkPhotoAllowance,
+  globalMonthlyLimit,
   PlanLimitError,
 } from "../limits"
 import {
@@ -34,6 +35,7 @@ beforeEach(() => {
   vi.stubEnv("BILLING_EXEMPT_EMAILS", "")
   prismaMock.usageMonth.findUnique.mockResolvedValue(null)
   prismaMock.wardrobe.count.mockResolvedValue(0)
+  prismaMock.usageMonth.aggregate.mockResolvedValue({ _sum: { looks: 0 } })
 })
 afterEach(() => vi.unstubAllEnvs())
 
@@ -226,5 +228,35 @@ describe("webhook signature", () => {
     expect(verifyWebhookSignature({ ...base, secret: "nope" })).toBe(false)
     expect(verifyWebhookSignature({ ...base, signature: null })).toBe(false)
     expect(verifyWebhookSignature({ ...base, signature: "garbage" })).toBe(false)
+  })
+})
+
+describe("global monthly ceiling", () => {
+  it("reads TRYON_GLOBAL_MONTHLY_LIMIT, and ignores nonsense", () => {
+    expect(globalMonthlyLimit({ TRYON_GLOBAL_MONTHLY_LIMIT: "1500" } as never)).toBe(1500)
+    expect(globalMonthlyLimit({} as never)).toBeNull()
+    expect(globalMonthlyLimit({ TRYON_GLOBAL_MONTHLY_LIMIT: "0" } as never)).toBeNull()
+    expect(globalMonthlyLimit({ TRYON_GLOBAL_MONTHLY_LIMIT: "abc" } as never)).toBeNull()
+  })
+
+  it("lets looks through while everyone together is under it", async () => {
+    vi.stubEnv("TRYON_GLOBAL_MONTHLY_LIMIT", "100")
+    subscribed("pro")
+    prismaMock.usageMonth.aggregate.mockResolvedValue({ _sum: { looks: 99 } })
+    await expect(checkLookAllowance("u1")).resolves.toBeDefined()
+  })
+
+  it("stops everyone at the ceiling with a 503, even someone with room in their plan", async () => {
+    vi.stubEnv("TRYON_GLOBAL_MONTHLY_LIMIT", "100")
+    subscribed("pro")
+    prismaMock.usageMonth.aggregate.mockResolvedValue({ _sum: { looks: 100 } })
+    vi.spyOn(console, "error").mockImplementation(() => {})
+    await expect(checkLookAllowance("u1")).rejects.toMatchObject({ status: 503 })
+  })
+
+  it("does nothing, and asks nothing, without a ceiling", async () => {
+    subscribed("pro")
+    await checkLookAllowance("u1")
+    expect(prismaMock.usageMonth.aggregate).not.toHaveBeenCalled()
   })
 })
