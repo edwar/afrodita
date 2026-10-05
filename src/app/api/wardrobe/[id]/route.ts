@@ -1,7 +1,6 @@
-import { NextResponse, after } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireUserId, unauthorized } from "@/lib/require-user"
-import { generateWardrobe3D } from "@/lib/three-d/generate-wardrobe-3d"
 
 export const maxDuration = 300
 
@@ -57,8 +56,6 @@ export async function PUT(
       )
     }
 
-    const imageChanged = !!imageUrl && imageUrl !== existing.imageUrl
-
     const wardrobe = await prisma.wardrobe.update({
       where: { id },
       data: {
@@ -69,19 +66,8 @@ export async function PUT(
         ...(brand !== undefined && { brand }),
         ...(season !== undefined && { season }),
         ...(imageUrl && { imageUrl }),
-        ...(imageChanged && { modelUrl: null, model3dStatus: "generating" }),
       },
     })
-
-    if (imageChanged) {
-      after(async () => {
-        try {
-          await generateWardrobe3D(wardrobe.id)
-        } catch (error) {
-          console.error("Auto 3D regeneration failed:", error)
-        }
-      })
-    }
 
     return NextResponse.json(wardrobe)
   } catch (error) {

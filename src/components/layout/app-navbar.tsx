@@ -49,6 +49,12 @@ export function AppNavbar() {
           >
             {t("nav.stylist")}
           </Link>
+          <Link
+            href="/looks"
+            className={`${LINK_BASE} ${isActive(pathname, "/looks") ? LINK_ACTIVE : LINK_INACTIVE}`}
+          >
+            {t("nav.looks")}
+          </Link>
 
           {user && (
             <span className="text-[11px] tracking-[0.15em] uppercase text-[#6B6B6B] hidden lg:block max-w-[180px] truncate">

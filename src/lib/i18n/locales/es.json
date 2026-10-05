@@ -9,7 +9,8 @@
     "dashboard": "Mi Closet",
     "logout": "Cerrar sesión",
     "closet": "Mi Closet",
-    "stylist": "Estilista"
+    "stylist": "Asesor de Imagen",
+    "looks": "Mis looks"
   },
   "landing": {
     "hero": {
@@ -39,7 +40,7 @@
       "step3": {
         "number": "03",
         "title": "Mírate vestida/o",
-        "description": "Prueba cada outfit en vivo con tu cámara antes de decidirte."
+        "description": "Mira cada outfit sobre una foto tuya antes de decidirte."
       }
     },
     "why": {
@@ -54,8 +55,8 @@
         "ai_fashion_desc": "Considera ocasión, estilo, clima y tendencias actuales.",
         "options": "3 opciones para elegir",
         "options_desc": "Múltiples looks para que elijas el que más te guste.",
-        "tryon_live": "Pruébalo en vivo con tu cámara",
-        "tryon_live_desc": "El probador virtual AR muestra cada look sobre tu cuerpo en tiempo real, sin fotos ni avatares."
+        "tryon_live": "Pruébatelo con una foto",
+        "tryon_live_desc": "Sube una foto tuya y la IA te muestra con cada look puesto, de forma fotorrealista."
       }
     },
     "cta": {
@@ -129,18 +130,6 @@
       "save": "Guardar cambios",
       "add": "Agregar prenda"
     },
-    "model3dGenerated": "Modelo 3D generado",
-    "model3dGenerating": "Generando modelo 3D en segundo plano...",
-    "model3dFailed": "No se pudo generar el modelo 3D. Reintenta más tarde.",
-    "model3dCredits": "Tripo API sin créditos. Los del Studio no cuentan: recarga en developers.tripo3d.ai",
-    "generating3d": "Generando modelo 3D",
-    "generate3d": "Generar modelo 3D",
-    "preview3d": "Previsualizar modelo 3D",
-    "preview3dTitle": "Vista previa 3D",
-    "preview3dClose": "Cerrar vista previa",
-    "preview3dHint": "Arrastra para rotar",
-    "model3dLoading": "Cargando modelo 3D...",
-    "model3dLoadError": "No se pudo cargar el modelo 3D.",
     "edit": "Editar",
     "delete": "Eliminar",
     "deleteTitle": "Eliminar prenda",
@@ -153,14 +142,14 @@
     "collectionError": "Error al cargar la colección"
   },
   "chat": {
-    "title": "Tu Estilista Personal",
+    "title": "Tu Asesor de imagen",
     "aiAssistant": "Asistente IA",
     "subtitle": "Cuéntame para qué te vistes y te ayudo a encontrar el look perfecto",
     "placeholder": "Escribe tu mensaje...",
     "generating": "Analizando tu closet...",
     "thinking": "Pensando en tu estilo...",
-    "welcome": "¡Hola! Soy tu estilista personal. 👋 Me encantaría ayudarte a encontrar el look perfecto. ¿Para qué ocasión te vistes hoy?",
-    "personalStylist": "Estilista Personal",
+    "welcome": "¡Hola! Soy tu asesor de imagen. 👋 Me encantaría ayudarte a encontrar el look perfecto. ¿Para qué ocasión te vistes hoy?",
+    "personalStylist": "Asesor de imagen",
     "try": "Prueba con:",
     "generated": "Outfit generado",
     "optionsAvailable": "opciones disponibles",
@@ -173,8 +162,15 @@
       "gym": "Para el gimnasio",
       "date": "Para una cita"
     },
-    "tryOnLive": "Probar en vivo",
-    "threeOptionsNeeded": "Necesitas 3 opciones generadas para abrir el probador."
+    "tryOnLive": "Probármelo",
+    "threeOptionsNeeded": "Necesitas 3 opciones generadas para abrir el probador.",
+    "anchors": {
+      "title": "Prendas base (opcional)",
+      "hint": "Elige hasta {max} prendas de tu closet que quieras usar sí o sí; el estilista armará los looks alrededor de ellas.",
+      "pick": "Elegir prendas base",
+      "remove": "Quitar {name}",
+      "placeholder": "Cuéntame qué buscas con estas prendas (ocasión, estilo, clima...)"
+    }
   },
   "preview": {
     "title": "Tus Outfits",
@@ -185,11 +181,11 @@
     "includedPieces": "Prendas incluidas",
     "saveLook": "Guardar look",
     "useOutfit": "Usar este outfit",
-    "arPreview": "Probador en vivo",
-    "arHint": "Colócate frente a la cámara para ver el look sobre tu cuerpo",
+    "arPreview": "Probador con IA",
+    "arHint": "Sube tu foto una vez y mira cada look sobre ti",
     "locked": {
       "title": "Aún no hay looks generados",
-      "description": "El estilista IA necesita generar 3 opciones de outfit antes de poder probarlas en vivo con tu cámara.",
+      "description": "El estilista IA necesita generar 3 opciones de outfit antes de poder probártelas.",
       "cta": "Ir al estilista"
     }
   },
@@ -239,14 +235,80 @@
     "back": "Volver"
   },
   "tryon": {
-    "loading": "Activando probador...",
-    "live": "En vivo",
-    "hint": "Aléjate para que se vea tu cuerpo completo",
-    "error": "No se pudo acceder a la cámara. Verifica los permisos de tu navegador.",
-    "retry": "Reintentar",
-    "modelError": "No se pudo cargar el modelo 3D.",
-    "calibrating": "Calibrando silueta...",
-    "debugSkeleton": "Ver cuerpo",
-    "debugGarment": "Ver prenda"
+    "uploadTitle": "Pruébate el look",
+    "uploadHint": "Sube una foto tuya de cuerpo entero, de frente y con buena luz. La usaremos para mostrarte con cada outfit.",
+    "uploadCta": "Subir mi foto",
+    "privacy": "Tu foto se guarda de forma privada y se envía a Google Gemini para generar las imágenes. Puedes eliminarla cuando quieras; los looks generados se eliminan uno a uno desde Mis looks.",
+    "generate": "Ver cómo me queda",
+    "generating": "Generando tu look",
+    "generatingHint": "Puede tardar hasta un minuto.",
+    "changePhoto": "Cambiar foto",
+    "deletePhoto": "Eliminar foto",
+    "photoNotice": "Tu foto actual",
+    "aiNotice": "Imagen generada con IA: el ajuste real puede variar.",
+    "photoAlt": "Tu foto",
+    "lookAlt": "Tú con el look seleccionado",
+    "photoSaved": "Foto del look guardada",
+    "photoError": "Genera primero el look para poder guardarlo",
+    "regenerate": "Regenerar",
+    "refresh": "Actualizar con mi foto",
+    "outdatedNotice": "Este look se generó con una foto anterior.",
+    "noPhotoNotice": "Generado con una foto que ya no está. Sube una foto para generar looks nuevos.",
+    "confirm": {
+      "regenerate": {
+        "title": "¿Generar otra versión?",
+        "description": "Se creará una imagen nueva de este look que reemplaza a la actual; la anterior no se puede recuperar. Cada generación tiene costo y cuenta para tu límite diario.",
+        "confirm": "Regenerar"
+      },
+      "refresh": {
+        "title": "¿Actualizar este look con tu foto actual?",
+        "description": "Se generará de nuevo con tu foto actual y reemplazará la imagen que ves, hecha con una foto anterior. Cada generación tiene costo y cuenta para tu límite diario.",
+        "confirm": "Actualizar"
+      },
+      "change": {
+        "title": "¿Cambiar tu foto base?",
+        "description": "La foto nueva se usará en los looks que generes a partir de ahora. Los looks que ya tienes se conservan tal como están; podrás actualizar cada uno con tu foto nueva cuando quieras.",
+        "confirm": "Elegir foto"
+      },
+      "delete": {
+        "title": "¿Eliminar tu foto base?",
+        "description": "Se eliminará tu foto. Los looks que ya generaste se conservan, pero no podrás generar ni actualizar looks hasta que subas otra foto.",
+        "confirm": "Eliminar foto"
+      }
+    }
+  },
+  "looks": {
+    "title": "Mis Estilos",
+    "subtitle": "{count} combinaciones propuestas por tu estilista",
+    "empty": "Todavía no tienes looks. Pídele uno a tu estilista.",
+    "emptyCta": "Ir al estilista",
+    "search": "Buscar por nombre, prenda u ocasión",
+    "allGarments": "Todas las prendas",
+    "filterAll": "Todos",
+    "filterGenerated": "Con foto generada",
+    "filterPending": "Sin generar",
+    "noResults": "Ningún look coincide con los filtros.",
+    "notGenerated": "Sin generar",
+    "close": "Cerrar",
+    "requested": "Lo que pediste",
+    "photoTitle": "Tu foto",
+    "photoHint": "Si la cambias o eliminas, tus looks generados se conservan.",
+    "photoMissing": "Sube una foto de cuerpo entero para verte con cada look.",
+    "delete": "Eliminar look",
+    "deleteTitle": "¿Eliminar este look?",
+    "deleteDescription": "Se eliminará «{name}» y su foto generada. Tus prendas no se tocan. Esta acción no se puede deshacer.",
+    "deleted": "Look eliminado",
+    "like": "Me gusta",
+    "unlike": "Quitar me gusta",
+    "onlyLiked": "Me gustan",
+    "outdated": "Foto anterior",
+    "garmentsSelected": "{count} prendas",
+    "compare": "Comparar",
+    "compareTitle": "Comparar looks",
+    "compareCount": "{count} looks",
+    "comparePick": "Elige de 2 a {max} looks para comparar · {count} seleccionados",
+    "compareCancel": "Cancelar",
+    "compareShared": "En todos",
+    "compareOpen": "Abrir este look"
   }
 }

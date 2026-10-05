@@ -2,7 +2,6 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { sileo } from "sileo"
-import { useTranslation } from "@/lib/i18n"
 
 export type WardrobeItem = {
   id: string
@@ -13,16 +12,9 @@ export type WardrobeItem = {
   brand?: string
   season?: string
   imageUrl: string
-  modelUrl?: string | null
-  riggedModelUrl?: string | null
-  model3dStatus?: string | null
-  model3dError?: string | null
 }
 
-export type WardrobeInput = Omit<
-  WardrobeItem,
-  "id" | "modelUrl" | "riggedModelUrl" | "model3dStatus"
->
+export type WardrobeInput = Omit<WardrobeItem, "id">
 
 function normalizeWardrobeItem(raw: unknown): WardrobeItem | null {
   if (!raw || typeof raw !== "object") return null
@@ -37,10 +29,6 @@ function normalizeWardrobeItem(raw: unknown): WardrobeItem | null {
     brand: item.brand ?? undefined,
     season: item.season ?? undefined,
     imageUrl: item.imageUrl,
-    modelUrl: item.modelUrl ?? null,
-    riggedModelUrl: item.riggedModelUrl ?? null,
-    model3dStatus: item.model3dStatus ?? null,
-    model3dError: item.model3dError ?? null,
   }
 }
 
@@ -60,18 +48,11 @@ export function useWardrobe() {
   return useQuery<WardrobeItem[]>({
     queryKey: ["wardrobe"],
     queryFn: fetchWardrobe,
-    refetchInterval: (query) => {
-      const items = query.state.data ?? []
-      return items.some((item) => item.model3dStatus === "generating")
-        ? 5000
-        : false
-    },
   })
 }
 
 export function useCreateWardrobe() {
   const queryClient = useQueryClient()
-  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: async (input: WardrobeInput) => {
@@ -91,7 +72,6 @@ export function useCreateWardrobe() {
         created,
         ...(old ?? []),
       ])
-      sileo.success({ title: t("wardrobe.model3dGenerating") })
     },
     onError: (error) => {
       sileo.error({
@@ -104,7 +84,6 @@ export function useCreateWardrobe() {
 
 export function useUpdateWardrobe() {
   const queryClient = useQueryClient()
-  const { t } = useTranslation()
 
   return useMutation({
     mutationFn: async ({
@@ -130,9 +109,6 @@ export function useUpdateWardrobe() {
       queryClient.setQueryData<WardrobeItem[]>(["wardrobe"], (old) =>
         (old ?? []).map((item) => (item.id === updated.id ? updated : item)),
       )
-      if (updated.model3dStatus === "generating") {
-        sileo.success({ title: t("wardrobe.model3dGenerating") })
-      }
     },
     onError: (error) => {
       sileo.error({
@@ -163,62 +139,6 @@ export function useDeleteWardrobe() {
         title:
           error instanceof Error ? error.message : "Error al eliminar la prenda",
       })
-    },
-  })
-}
-
-export function useGenerateWardrobe3D() {
-  const queryClient = useQueryClient()
-  const { t } = useTranslation()
-
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/wardrobe/${id}/generate-3d`, {
-        method: "POST",
-      })
-      const data = await res.json()
-      if (!res.ok)
-        throw new Error(data?.error || "Error al generar modelo 3D")
-      const updated = normalizeWardrobeItem(data)
-      if (!updated) throw new Error("Respuesta inválida del servidor")
-      return updated
-    },
-    onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: ["wardrobe"] })
-      const previous = queryClient.getQueryData<WardrobeItem[]>(["wardrobe"])
-      queryClient.setQueryData<WardrobeItem[]>(["wardrobe"], (old) =>
-        (old ?? []).map((item) =>
-          item.id === id
-            ? { ...item, model3dStatus: "generating" as const }
-            : item,
-        ),
-      )
-      return { previous }
-    },
-    onError: (error, _id, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(["wardrobe"], context.previous)
-      }
-      queryClient.invalidateQueries({ queryKey: ["wardrobe"] })
-      sileo.error({
-        title:
-          error instanceof Error ? error.message : "Error al generar modelo 3D",
-      })
-    },
-    onSuccess: (updated) => {
-      queryClient.setQueryData<WardrobeItem[]>(["wardrobe"], (old) =>
-        (old ?? []).map((item) => (item.id === updated.id ? updated : item)),
-      )
-      if (updated.model3dStatus === "ready") {
-        sileo.success({ title: t("wardrobe.model3dGenerated") })
-      } else if (updated.model3dStatus === "failed") {
-        sileo.error({
-          title: updated.model3dError || t("wardrobe.model3dFailed"),
-        })
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["wardrobe"] })
     },
   })
 }

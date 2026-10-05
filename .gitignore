@@ -43,3 +43,5 @@ prisma/migrations/
 # vercel
 .vercel
 .neon
+.env*
+!.env.example

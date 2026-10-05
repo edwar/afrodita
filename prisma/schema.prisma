@@ -71,19 +71,18 @@ model Wardrobe {
   brand     String?
   season    String?  // verano, invierno, primavera, otono, todo
   imageUrl  String
-  modelUrl  String?  // GLB generado por API image-to-3D
-  // generating | ready | failed | null (nunca iniciado)
-  model3dStatus String?
-  model3dError  String?  // último error amigable de generación
-
-  // Pipeline VTO (Blender headless: retopo + rig + LODs)
-  riggedModelUrl     String?   // GLB con skin (paso 02-rig)
-  rigStatus          String?   // pending | processing | ready | failed | null (no aplica)
+  // Columnas del antiguo probador 3D. El código ya no las usa; se conservan
+  // para que `db:push` no borre datos. Se pueden eliminar en una migración.
+  modelUrl           String?
+  model3dStatus      String?
+  model3dError       String?
+  riggedModelUrl     String?
+  rigStatus          String?
   rigError           String?
-  skeletonMapVersion String?   // "vto-skeleton-v1" — invalida retarget si cambia
-  lodUrls            String[]  // [lod0, lod1, lod2]
-  materialProfile    String?   // key de garment-material.ts
-  restPoseMeta       Json?     // dimensiones bind / offsets por hueso (Fase 2)
+  skeletonMapVersion String?
+  lodUrls            String[]
+  materialProfile    String?
+  restPoseMeta       Json?
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   outfits   OutfitOption[]
@@ -108,7 +107,7 @@ model OutfitOption {
   outfitId  String
   title     String   // "Look Casual Elegante", "Estilo Minimalista", etc.
   description String?
-  previewUrl String? // URL del render 3D del outfit
+  previewUrl String? // sin uso (el probador guarda sus imágenes en el bucket)
   items     Wardrobe[]
   outfit    Outfit   @relation(fields: [outfitId], references: [id], onDelete: Cascade)
 

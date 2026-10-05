@@ -4,10 +4,7 @@ import { ReactNode } from "react"
 import { QueryProvider } from "@/components/query-provider"
 import { AuthProvider } from "@/components/auth-provider"
 import { I18nProvider } from "@/lib/i18n"
-import { silenceThreeClockDeprecation } from "@/lib/three-deprecations"
 import { Toaster } from "sileo"
-
-silenceThreeClockDeprecation()
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (

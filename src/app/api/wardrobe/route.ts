@@ -1,7 +1,6 @@
-import { NextResponse, after } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireUserId, unauthorized } from "@/lib/require-user"
-import { generateWardrobe3D } from "@/lib/three-d/generate-wardrobe-3d"
 
 export const maxDuration = 300
 
@@ -55,23 +54,9 @@ export async function POST(request: Request) {
         brand,
         season,
         imageUrl,
-        model3dStatus: "generating",
         userId,
       },
     })
-
-    const id = wardrobe.id
-    try {
-      after(async () => {
-        try {
-          await generateWardrobe3D(id)
-        } catch (error) {
-          console.error("Auto 3D generation failed:", error)
-        }
-      })
-    } catch (error) {
-      console.error("after() failed, generation deferred:", error)
-    }
 
     return NextResponse.json(wardrobe, { status: 201 })
   } catch (error) {

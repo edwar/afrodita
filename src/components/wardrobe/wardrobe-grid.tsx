@@ -14,7 +14,6 @@ interface WardrobeGridProps {
   onAdd: (item: WardrobeInput) => void
   onUpdate: (id: string, item: Partial<WardrobeInput>) => void
   onDelete: (id: string) => void
-  onGenerate3D?: (id: string) => void
 }
 
 export function WardrobeGrid({
@@ -22,7 +21,6 @@ export function WardrobeGrid({
   onAdd,
   onUpdate,
   onDelete,
-  onGenerate3D,
 }: WardrobeGridProps) {
   const { t } = useTranslation()
   const [showForm, setShowForm] = useState(false)
@@ -134,9 +132,6 @@ export function WardrobeGrid({
               priority={index < 4}
               onEdit={() => handleEdit(item)}
               onDelete={() => onDelete(item.id)}
-              onGenerate3D={
-                onGenerate3D ? () => onGenerate3D(item.id) : undefined
-              }
             />
           ))}
         </div>

@@ -9,7 +9,8 @@
     "dashboard": "My Closet",
     "logout": "Log out",
     "closet": "My Closet",
-    "stylist": "Stylist"
+    "stylist": "Image consultant",
+    "looks": "My looks"
   },
   "landing": {
     "hero": {
@@ -39,7 +40,7 @@
       "step3": {
         "number": "03",
         "title": "See It On You",
-        "description": "Try each outfit live with your camera before deciding."
+        "description": "See each outfit on a photo of you before deciding."
       }
     },
     "why": {
@@ -54,8 +55,8 @@
         "ai_fashion_desc": "Considers occasion, style, weather, and current trends.",
         "options": "3 Options to Choose",
         "options_desc": "Multiple looks so you can pick the one you love most.",
-        "tryon_live": "Try it live with your camera",
-        "tryon_live_desc": "The AR virtual try-on shows every look on your body in real time — no photos or avatars needed."
+        "tryon_live": "Try it on with a photo",
+        "tryon_live_desc": "Upload a photo of yourself and AI shows you wearing each look, photorealistically."
       }
     },
     "cta": {
@@ -129,18 +130,6 @@
       "save": "Save Changes",
       "add": "Add Piece"
     },
-    "model3dGenerated": "3D model generated",
-    "model3dGenerating": "Generating 3D model in the background...",
-    "model3dFailed": "Could not generate the 3D model. Try again later.",
-    "model3dCredits": "Tripo API has no credits. Studio credits don't apply — top up at developers.tripo3d.ai",
-    "generating3d": "Generating 3D model",
-    "generate3d": "Generate 3D model",
-    "preview3d": "Preview 3D model",
-    "preview3dTitle": "3D Preview",
-    "preview3dClose": "Close preview",
-    "preview3dHint": "Drag to rotate",
-    "model3dLoading": "Loading 3D model...",
-    "model3dLoadError": "Could not load the 3D model.",
     "edit": "Edit",
     "delete": "Delete",
     "deleteTitle": "Delete garment",
@@ -153,14 +142,14 @@
     "collectionError": "Error loading the collection"
   },
   "chat": {
-    "title": "Your Personal Stylist",
+    "title": "Your Image consultant",
     "aiAssistant": "AI Assistant",
     "subtitle": "Tell me what you're dressing for and I'll help you find the perfect look",
     "placeholder": "Type your message...",
     "generating": "Analyzing your closet...",
     "thinking": "Thinking about your style...",
-    "welcome": "Hi there! I'm your personal stylist. 👋 I'd love to help you find the perfect look. What are you dressing for today?",
-    "personalStylist": "Personal Stylist",
+    "welcome": "Hi there! I'm your image consultant. 👋 I'd love to help you find the perfect look. What are you dressing for today?",
+    "personalStylist": "Image consultant",
     "try": "Try:",
     "generated": "Outfit Generated",
     "optionsAvailable": "options available",
@@ -173,8 +162,15 @@
       "gym": "For the gym",
       "date": "For a date"
     },
-    "tryOnLive": "Try it on live",
-    "threeOptionsNeeded": "You need 3 generated options to open the fitting room."
+    "tryOnLive": "Try it on",
+    "threeOptionsNeeded": "You need 3 generated options to open the fitting room.",
+    "anchors": {
+      "title": "Base garments (optional)",
+      "hint": "Pick up to {max} garments from your closet that you definitely want to wear; the stylist will build the looks around them.",
+      "pick": "Pick base garments",
+      "remove": "Remove {name}",
+      "placeholder": "Tell me what you are after with these garments (occasion, style, weather...)"
+    }
   },
   "preview": {
     "title": "Your Outfits",
@@ -185,11 +181,11 @@
     "includedPieces": "Included Pieces",
     "saveLook": "Save Look",
     "useOutfit": "Use This Outfit",
-    "arPreview": "Live Try-On",
-    "arHint": "Stand in front of the camera to see the look on your body",
+    "arPreview": "AI try-on",
+    "arHint": "Upload your photo once and see every look on you",
     "locked": {
       "title": "No generated looks yet",
-      "description": "The AI stylist needs to generate 3 outfit options before you can try them on live with your camera.",
+      "description": "The AI stylist needs to generate 3 outfit options before you can try them on.",
       "cta": "Go to the stylist"
     }
   },
@@ -239,14 +235,80 @@
     "back": "Back"
   },
   "tryon": {
-    "loading": "Starting try-on...",
-    "live": "Live",
-    "hint": "Step back so your full body is visible",
-    "error": "Could not access the camera. Check your browser permissions.",
-    "retry": "Retry",
-    "modelError": "Failed to load the 3D model.",
-    "calibrating": "Calibrating silhouette...",
-    "debugSkeleton": "Show body",
-    "debugGarment": "Show garment"
+    "uploadTitle": "Try the look on",
+    "uploadHint": "Upload a full-body photo of yourself, facing the camera and well lit. We will use it to show you in each outfit.",
+    "uploadCta": "Upload my photo",
+    "privacy": "Your photo is stored privately and sent to Google Gemini to generate the images. You can delete it at any time; generated looks are deleted one by one from My looks.",
+    "generate": "See how it looks on me",
+    "generating": "Generating your look",
+    "generatingHint": "This can take up to a minute.",
+    "changePhoto": "Change photo",
+    "deletePhoto": "Delete photo",
+    "photoNotice": "Your current photo",
+    "aiNotice": "AI-generated image: the real fit may differ.",
+    "photoAlt": "Your photo",
+    "lookAlt": "You wearing the selected look",
+    "photoSaved": "Look photo saved",
+    "photoError": "Generate the look first to save it",
+    "regenerate": "Regenerate",
+    "refresh": "Update with my photo",
+    "outdatedNotice": "This look was generated from an earlier photo.",
+    "noPhotoNotice": "Generated from a photo that is gone. Upload a photo to generate new looks.",
+    "confirm": {
+      "regenerate": {
+        "title": "Generate another version?",
+        "description": "A new image of this look will replace the current one; the previous one cannot be recovered. Each generation has a cost and counts toward your daily limit.",
+        "confirm": "Regenerate"
+      },
+      "refresh": {
+        "title": "Update this look with your current photo?",
+        "description": "It will be generated again from your current photo and replace the image you see, made from an earlier photo. Each generation has a cost and counts toward your daily limit.",
+        "confirm": "Update"
+      },
+      "change": {
+        "title": "Change your base photo?",
+        "description": "The new photo will be used for the looks you generate from now on. The looks you already have stay as they are; you can update each one with your new photo whenever you want.",
+        "confirm": "Choose photo"
+      },
+      "delete": {
+        "title": "Delete your base photo?",
+        "description": "Your photo will be deleted. The looks you already generated are kept, but you will not be able to generate or update looks until you upload another photo.",
+        "confirm": "Delete photo"
+      }
+    }
+  },
+  "looks": {
+    "title": "My Looks",
+    "subtitle": "{count} combinations proposed by your stylist",
+    "empty": "You have no looks yet. Ask your stylist for one.",
+    "emptyCta": "Go to the stylist",
+    "search": "Search by name, garment or occasion",
+    "allGarments": "All garments",
+    "filterAll": "All",
+    "filterGenerated": "With generated photo",
+    "filterPending": "Not generated",
+    "noResults": "No look matches the filters.",
+    "notGenerated": "Not generated",
+    "close": "Close",
+    "requested": "What you asked for",
+    "photoTitle": "Your photo",
+    "photoHint": "If you change or delete it, your generated looks are kept.",
+    "photoMissing": "Upload a full-body photo to see yourself in each look.",
+    "delete": "Delete look",
+    "deleteTitle": "Delete this look?",
+    "deleteDescription": "“{name}” and its generated photo will be deleted. Your garments are not affected. This cannot be undone.",
+    "deleted": "Look deleted",
+    "like": "Like",
+    "unlike": "Remove like",
+    "onlyLiked": "Liked",
+    "outdated": "Earlier photo",
+    "garmentsSelected": "{count} garments",
+    "compare": "Compare",
+    "compareTitle": "Compare looks",
+    "compareCount": "{count} looks",
+    "comparePick": "Pick 2 to {max} looks to compare · {count} selected",
+    "compareCancel": "Cancel",
+    "compareShared": "In all",
+    "compareOpen": "Open this look"
   }
 }

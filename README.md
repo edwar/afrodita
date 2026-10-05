@@ -1,12 +1,12 @@
 # Afrodita
 
-Estilista personal de moda con inteligencia artificial. Combina la ropa que ya tienes, descubre looks para cada ocasión y pruébatelos en tiempo real sobre tu cuerpo con probador 3D.
+Estilista personal de moda con inteligencia artificial. Combina la ropa que ya tienes, descubre looks para cada ocasión y míralos puestos sobre una foto tuya con el probador con IA.
 
 ## Funcionalidad
 
 - **Closet digital**: carga fotos de prendas con color, material, marca y temporada.
 - **Estilista IA**: conversa con el asistente y recibe 3 opciones de outfit para la ocasión que describas.
-- **Probador 3D en vivo**: seguimiento de poses con MediaPipe y deformación de prendas 3D (skinning) sobre tu cuerpo con Three.js / React Three Fiber.
+- **Probador con IA**: sube una foto tuya una vez y un modelo de imagen de Gemini te muestra con cada outfit puesto, de forma fotorrealista.
 
 ## Stack
 
@@ -14,8 +14,7 @@ Estilista personal de moda con inteligencia artificial. Combina la ropa que ya t
 - **UI**: Tailwind CSS 4
 - **Base de datos**: Neon (PostgreSQL) + Prisma
 - **Auth**: Better Auth
-- **3D**: Three.js / React Three Fiber + MediaPipe Tasks Vision
-- **IA**: Gemini (principal), OpenAI y Anthropic como alternativas
+- **IA**: Gemini (estilista y probador), OpenAI y Anthropic como alternativas para el estilista
 - **Testing**: Vitest
 - **Despliegue**: Vercel
 
@@ -28,18 +27,15 @@ pnpm db:push                 # aplica el esquema a Neon
 pnpm dev
 ```
 
-### Assets 3D (pipeline Blender)
+### Probador con IA
 
-El probador 3D usa modelos GLB procesados offline con Blender y `gltf-transform` (`scripts/asset-pipeline/`). Requiere Blender 4.5+:
+El probador (`src/lib/tryon/`, `src/components/tryon/`) genera una imagen del usuario con el outfit puesto:
 
-```bash
-pnpm assets:wasm       # copia el runtime WASM de MediaPipe a public/
-pnpm assets:draco      # copia el decoder Draco de three.js a public/
-pnpm assets:retopo -- --in raw.glb --out retopo.glb --category camisa
-pnpm assets:rig -- --in retopo.glb --out rigged.glb --category camisa
-pnpm assets:lods -- --in rigged.glb --skinned
-pnpm assets:validate -- rigged.lod0.glb --require-skin
-```
+- **Foto base**: el usuario sube una foto de cuerpo entero (`PUT /api/tryon/photo`). Se guarda privada en el bucket, bajo `tryon/<userId>/`, y puede eliminarla junto con todos sus looks (`DELETE`).
+- **Generación**: `POST /api/tryon/looks/[optionId]` envía a Gemini la foto y las fotos de las prendas de esa opción en una sola llamada (`gemini.ts`). Requiere `GEMINI_API_KEY`; el modelo se puede cambiar con `GEMINI_IMAGE_MODEL`.
+- **Caché**: cada look se guarda con un hash de la foto y las prendas, así que solo se paga una vez por combinación. Hay un tope por usuario y día (`TRYON_DAILY_LIMIT`, 20 por defecto).
+
+No hay tablas nuevas: todo vive en el almacenamiento de objetos.
 
 ## Despliegue en Vercel
 
@@ -53,11 +49,8 @@ pnpm assets:validate -- rigged.lod0.glb --require-skin
 ```
 src/
   app/            # Rutas App Router (landing, auth, dashboard, API)
-  components/     # UI (chat, closet, probador 3D, layout)
-  lib/            # Lógica (IA, auth, i18n, VTO, almacenamiento)
-  workers/        # Inferencia MediaPipe en Web Worker
-scripts/
-  asset-pipeline/ # Pipeline offline de modelos 3D (Blender + gltf-transform)
+  components/     # UI (chat, closet, probador, layout)
+  lib/            # Lógica (IA, auth, i18n, probador, almacenamiento)
 prisma/
   schema.prisma   # Modelos: User, Wardrobe, Outfit
 ```

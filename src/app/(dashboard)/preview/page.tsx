@@ -2,22 +2,18 @@
 
 import Link from "next/link"
 import { Lock, RefreshCw } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { sileo } from "sileo"
 import { useTranslation } from "@/lib/i18n"
 import { OutfitPreview } from "@/components/preview/outfit-preview"
-import { ARMirror, TryOnGarment } from "@/components/tryon/ar-mirror"
-import { TryOn3D } from "@/components/tryon/tryon-3d"
+import { OutfitTryOn } from "@/components/tryon/outfit-try-on"
 
 interface OutfitItem {
   id: string
   name: string
   category: string
   color: string
-  material?: string | null
   imageUrl: string
-  modelUrl?: string | null
-  riggedModelUrl?: string | null
-  skeletonMapVersion?: string | null
 }
 
 interface OutfitOption {
@@ -39,6 +35,23 @@ export default function PreviewPage() {
   const [status, setStatus] = useState<PageStatus>("loading")
   const [outfit, setOutfit] = useState<Outfit | null>(null)
   const [selectedOption, setSelectedOption] = useState(0)
+  const lookUrlRef = useRef<string | null>(null)
+
+  const saveLook = async () => {
+    const lookUrl = lookUrlRef.current
+    if (!lookUrl) {
+      sileo.error({ title: t("tryon.photoError") })
+      return
+    }
+    const photo = await fetch(lookUrl).then((response) => response.blob())
+    const url = URL.createObjectURL(photo)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = `afrodita-look-${Date.now()}.jpg`
+    link.click()
+    URL.revokeObjectURL(url)
+    sileo.success({ title: t("tryon.photoSaved") })
+  }
 
   useEffect(() => {
     const fetchLatestOutfit = async () => {
@@ -47,7 +60,8 @@ export default function PreviewPage() {
         if (!res.ok) throw new Error("Failed to load outfit")
         const data: Outfit | null = await res.json()
 
-        if (data && data.options.length === 3) {
+        // Looks can be deleted from the gallery, so an outfit may have fewer than 3
+        if (data && data.options.length > 0) {
           setOutfit(data)
           setStatus("ready")
         } else {
@@ -63,22 +77,6 @@ export default function PreviewPage() {
 
   const options = outfit?.options ?? []
   const currentOption = options[selectedOption] ?? options[0]
-
-  const selectedGarments: TryOnGarment[] = useMemo(
-    () =>
-      (currentOption?.items ?? []).map((item) => ({
-        id: item.id,
-        name: item.name,
-        category: item.category,
-        color: item.color,
-        material: item.material ?? undefined,
-        imageUrl: item.imageUrl,
-        modelUrl: item.modelUrl ?? undefined,
-        riggedModelUrl: item.riggedModelUrl ?? undefined,
-        skeletonMapVersion: item.skeletonMapVersion ?? undefined,
-      })),
-    [currentOption]
-  )
 
   return (
     <main className="pt-16">
@@ -160,16 +158,11 @@ export default function PreviewPage() {
                     </span>
                   </div>
 
-                  {selectedGarments.length > 0 &&
-                  selectedGarments.every((g) => g.modelUrl) ? (
-                    <div className="bg-[#1A1A1A]">
-                      <TryOn3D garments={selectedGarments} />
-                    </div>
-                  ) : (
-                    <div className="aspect-[3/4] bg-[#EDE8E1]">
-                      <ARMirror garments={selectedGarments} />
-                    </div>
-                  )}
+                  <OutfitTryOn
+                    key={currentOption.id}
+                    optionId={currentOption.id}
+                    lookUrlRef={lookUrlRef}
+                  />
 
                   <p className="text-xs text-[#6B6B6B] text-center mt-4">
                     {t("preview.arHint")}
@@ -177,7 +170,7 @@ export default function PreviewPage() {
 
                   {/* Action buttons */}
                   <div className="flex gap-4 mt-8">
-                    <button className="btn-fashion-outline flex-1">
+                    <button onClick={saveLook} className="btn-fashion-outline flex-1">
                       {t("preview.saveLook")}
                     </button>
                     <button className="btn-fashion flex-1">
