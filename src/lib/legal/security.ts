@@ -12,7 +12,7 @@ export const SECURITY: LegalDocs = {
         body: [
           {
             list: [
-              "Tu cuenta: nombre, correo electrónico y contraseña (guardada solo como hash, nunca en texto plano).",
+              "Tu cuenta: nombre, correo electrónico y contraseña (guardada solo como hash, nunca en texto plano). Si entras con Google, recibimos de Google tu nombre, correo y foto de perfil; nunca vemos tu contraseña de Google.",
               "Tu sesión: identificador de sesión, fecha de expiración, dirección IP y tipo de navegador.",
               "Tu closet: las fotos de tus prendas y sus datos (nombre, categoría, color, material, marca y temporada).",
               "Tu foto base y los looks generados con ella.",
@@ -39,6 +39,7 @@ export const SECURITY: LegalDocs = {
           "Usamos proveedores que procesan datos por nuestra cuenta:",
           {
             list: [
+              "Google (inicio de sesión con Google): verifica tu identidad cuando eliges entrar con tu cuenta de Google.",
               "Google (API de Gemini): recibe tus mensajes al estilista, los datos de tus prendas y tus valoraciones recientes para recomendarte looks; tu foto base para revisarla; y tu foto base junto con las fotos de las prendas del look para generar la imagen.",
               "Neon: base de datos y almacenamiento privado de archivos (tus fotos y looks).",
               "Vercel: alojamiento de la aplicación.",
@@ -143,7 +144,7 @@ export const SECURITY: LegalDocs = {
         body: [
           {
             list: [
-              "Your account: name, email address and password (stored only as a hash, never in plain text).",
+              "Your account: name, email address and password (stored only as a hash, never in plain text). If you sign in with Google, we receive your name, email and profile picture from Google; we never see your Google password.",
               "Your session: session identifier, expiry date, IP address and browser type.",
               "Your closet: the photos of your garments and their details (name, category, color, material, brand and season).",
               "Your base photo and the looks generated from it.",
@@ -170,6 +171,7 @@ export const SECURITY: LegalDocs = {
           "We use providers that process data on our behalf:",
           {
             list: [
+              "Google (Sign in with Google): verifies your identity when you choose to sign in with your Google account.",
               "Google (Gemini API): receives your messages to the stylist, your garments' details and your recent ratings to recommend looks; your base photo to review it; and your base photo together with the photos of the garments in a look to generate the image.",
               "Neon: database and private file storage (your photos and looks).",
               "Vercel: application hosting.",

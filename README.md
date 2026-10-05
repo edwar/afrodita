@@ -27,6 +27,14 @@ pnpm db:push                 # aplica el esquema a Neon
 pnpm dev
 ```
 
+### Autenticación
+
+Correo y contraseña, Google, o ambos sobre la misma cuenta (`better-auth`, `src/lib/auth.ts`).
+
+- Google es opcional: sin `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` los botones no aparecen. En Google Cloud Console crea un ID de cliente web y autoriza la URI de redireccionamiento `<BETTER_AUTH_URL>/api/auth/callback/google` (y la de `http://localhost:3000` para desarrollo).
+- Los correos de las cuentas con contraseña no están verificados, así que Google **no se enlaza solo por coincidir el correo** (permitiría apropiarse de una cuenta ajena). El enlace es explícito, desde `/account`: quien entró con contraseña conecta Google, y quien entró con Google añade una contraseña.
+- Si alguien intenta entrar con Google con un correo que ya tiene cuenta con contraseña, vuelve a `/login?error=account_not_linked` con la explicación.
+
 ### Probador con IA
 
 El probador (`src/lib/tryon/`, `src/components/tryon/`) genera una imagen del usuario con el outfit puesto:
