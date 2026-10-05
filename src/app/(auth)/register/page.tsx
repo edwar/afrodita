@@ -7,7 +7,10 @@ import { signUp } from "@/lib/auth-client"
 import { useTranslation } from "@/lib/i18n"
 import { sileo } from "sileo"
 import { PasswordInput } from "@/components/ui/password-input"
-import { PasswordValidator, validatePassword } from "@/components/ui/password-validator"
+import {
+  PasswordValidator,
+  validatePassword,
+} from "@/components/ui/password-validator"
 import { LanguageSwitcher } from "@/components/language-switcher"
 
 export default function RegisterPage() {
@@ -125,8 +128,8 @@ export default function RegisterPage() {
                 placeholder="••••••••"
                 autoComplete="new-password"
               />
-              <PasswordValidator 
-                password={password} 
+              <PasswordValidator
+                password={password}
                 confirmPassword={confirmPassword}
               />
             </div>
@@ -155,6 +158,26 @@ export default function RegisterPage() {
               )}
             </button>
           </form>
+
+          <p className="mt-6 text-center text-xs leading-relaxed text-[#6B6B6B]">
+            {t("auth.legal.prefix")}{" "}
+            <Link
+              href="/terminos"
+              target="_blank"
+              className="underline underline-offset-4 hover:text-[#1A1A1A]"
+            >
+              {t("auth.legal.terms")}
+            </Link>{" "}
+            {t("auth.legal.and")}{" "}
+            <Link
+              href="/seguridad"
+              target="_blank"
+              className="underline underline-offset-4 hover:text-[#1A1A1A]"
+            >
+              {t("auth.legal.security")}
+            </Link>
+            .
+          </p>
 
           {/* Footer */}
           <p className="text-sm text-[#6B6B6B] mt-8 text-center">

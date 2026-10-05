@@ -68,7 +68,15 @@
       "buttonAuthenticated": "Go to my closet"
     },
     "footer": {
-      "copyright": "Your closet, your style."
+      "copyright": "Your closet, your style.",
+      "terms": "Terms and conditions",
+      "security": "Security and privacy"
+    },
+    "alt": {
+      "hero": "Person wearing an editorial-style outfit",
+      "closet": "Clothes neatly arranged in a closet",
+      "style": "Person choosing a look for the occasion",
+      "avatar": "Person trying on an AI-generated outfit"
     }
   },
   "auth": {
@@ -100,7 +108,13 @@
       "confirm": "Passwords match"
     },
     "passwordRequirements": "Password requirements",
-    "passwordStrong": "Strong password"
+    "passwordStrong": "Strong password",
+    "legal": {
+      "prefix": "By creating your account you accept the",
+      "terms": "Terms and conditions",
+      "and": "and the",
+      "security": "Security and privacy policy"
+    }
   },
   "wardrobe": {
     "title": "My Closet",
@@ -284,7 +298,13 @@
       "clothed": "You are wearing clothes: no nudity and nothing sexual, violent or illegal.",
       "review": "We review it automatically with AI before saving it; if it does not meet the conditions, it is not saved. It is then sent to Google Gemini to generate your looks.",
       "confirm": "I confirm my photo meets these conditions",
-      "continue": "Choose photo"
+      "continue": "Choose photo",
+      "links": {
+        "prefix": "Read the",
+        "terms": "Terms and conditions",
+        "and": "and the",
+        "security": "Security and privacy policy"
+      }
     }
   },
   "looks": {
@@ -347,5 +367,18 @@
     "skip": "Don't crop",
     "unreadable": "This browser cannot display this image (for example, a HEIC), so it cannot be cropped here. You can upload it as it is.",
     "uploadOriginal": "Upload without cropping"
+  },
+  "legal": {
+    "eyebrow": "Legal",
+    "updated": "Last updated: {date}",
+    "toc": "Contents",
+    "contact": "Contact",
+    "contactBody": "For any question, request about your data or report, write to us at",
+    "backHome": "Back to home"
+  },
+  "faq": {
+    "eyebrow": "Frequently asked questions",
+    "title": "What people ask",
+    "policyLink": "Read the security and privacy policy"
   }
 }

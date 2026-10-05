@@ -7,6 +7,7 @@ import { useTranslation } from "@/lib/i18n"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { SessionNavLinks } from "@/components/auth/session-nav-links"
 import { useAuth } from "@/components/auth-provider"
+import { FaqSection } from "@/components/faq-section"
 
 export default function LandingPage() {
   const { t } = useTranslation()
@@ -59,7 +60,7 @@ export default function LandingPage() {
               </p>
 
               <h1 className="heading-editorial text-[80px] md:text-[120px] lg:text-[160px] leading-[0.85] mb-8">
-                <span className="block">{t("landing.hero.title1")}</span>
+                <span className="block">{t("landing.hero.title1")}</span>{" "}
                 <span className="block italic">{t("landing.hero.title2")}</span>
               </h1>
 
@@ -85,7 +86,7 @@ export default function LandingPage() {
                   width={500}
                   height={500}
                   src="/images/fashion-hero.jpg"
-                  alt="Fashion editorial"
+                  alt={t("landing.alt.hero")}
                   priority
                   className="w-full h-full object-cover"
                 />
@@ -125,7 +126,7 @@ export default function LandingPage() {
                   width={500}
                   height={500}
                   src="/images/fashion-closet.jpg"
-                  alt="Upload your closet"
+                  alt={t("landing.alt.closet")}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
@@ -147,7 +148,7 @@ export default function LandingPage() {
                   width={500}
                   height={500}
                   src="/images/fashion-style.jpg"
-                  alt="Describe your look"
+                  alt={t("landing.alt.style")}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
@@ -169,7 +170,7 @@ export default function LandingPage() {
                   width={500}
                   height={500}
                   src="/images/fashion-avatar.jpg"
-                  alt="See it on you"
+                  alt={t("landing.alt.avatar")}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
@@ -238,6 +239,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <FaqSection />
+
       {/* CTA - Editorial Style */}
       <section className="py-24 md:py-32">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 text-center">
@@ -265,9 +268,19 @@ export default function LandingPage() {
       <footer className="py-8 border-t border-[#E0D9CF]">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4">
           <span className="font-editorial text-lg font-light">Afrodita</span>
-          <p className="text-xs text-[#6B6B6B]">
-            &copy; {new Date().getFullYear()} Afrodita. {t("landing.footer.copyright")}
-          </p>
+          <div className="flex flex-col items-center gap-2 md:items-end">
+            <nav className="flex items-center gap-5 text-xs text-[#6B6B6B]">
+              <Link href="/terminos" className="hover:text-[#1A1A1A] hover:underline">
+                {t("landing.footer.terms")}
+              </Link>
+              <Link href="/seguridad" className="hover:text-[#1A1A1A] hover:underline">
+                {t("landing.footer.security")}
+              </Link>
+            </nav>
+            <p className="text-xs text-[#6B6B6B]">
+              &copy; {new Date().getFullYear()} Afrodita. {t("landing.footer.copyright")}
+            </p>
+          </div>
         </div>
       </footer>
     </div>

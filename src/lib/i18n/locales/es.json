@@ -68,7 +68,15 @@
       "buttonAuthenticated": "Ir a mi closet"
     },
     "footer": {
-      "copyright": "Tu closet, tu estilo."
+      "copyright": "Tu closet, tu estilo.",
+      "terms": "Términos y condiciones",
+      "security": "Seguridad y privacidad"
+    },
+    "alt": {
+      "hero": "Persona con un outfit de estilo editorial",
+      "closet": "Prendas de ropa ordenadas en un closet",
+      "style": "Persona eligiendo un look para la ocasión",
+      "avatar": "Persona probándose un outfit generado con IA"
     }
   },
   "auth": {
@@ -100,7 +108,13 @@
       "confirm": "Las contraseñas coinciden"
     },
     "passwordRequirements": "Requisitos de contraseña",
-    "passwordStrong": "Contraseña segura"
+    "passwordStrong": "Contraseña segura",
+    "legal": {
+      "prefix": "Al crear tu cuenta aceptas los",
+      "terms": "Términos y condiciones",
+      "and": "y la",
+      "security": "Política de seguridad y privacidad"
+    }
   },
   "wardrobe": {
     "title": "Mi Closet",
@@ -284,7 +298,13 @@
       "clothed": "Llevas ropa puesta: sin desnudez ni contenido sexual, violento o ilegal.",
       "review": "La revisamos automáticamente con IA antes de guardarla; si no cumple las condiciones, no se guarda. Después se envía a Google Gemini para generar tus looks.",
       "confirm": "Confirmo que mi foto cumple estas condiciones",
-      "continue": "Elegir foto"
+      "continue": "Elegir foto",
+      "links": {
+        "prefix": "Lee los",
+        "terms": "Términos y condiciones",
+        "and": "y la",
+        "security": "Política de seguridad y privacidad"
+      }
     }
   },
   "looks": {
@@ -347,5 +367,18 @@
     "skip": "Sin recortar",
     "unreadable": "Este navegador no puede mostrar esta imagen (por ejemplo, un HEIC), así que no se puede recortar aquí. Puedes subirla tal como está.",
     "uploadOriginal": "Subir sin recortar"
+  },
+  "legal": {
+    "eyebrow": "Legal",
+    "updated": "Última actualización: {date}",
+    "toc": "Contenido",
+    "contact": "Contacto",
+    "contactBody": "Para cualquier consulta, solicitud sobre tus datos o reporte, escríbenos a",
+    "backHome": "Volver al inicio"
+  },
+  "faq": {
+    "eyebrow": "Preguntas frecuentes",
+    "title": "Lo que suelen preguntar",
+    "policyLink": "Lee la política de seguridad y privacidad"
   }
 }

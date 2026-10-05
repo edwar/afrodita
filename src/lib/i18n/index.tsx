@@ -8,6 +8,7 @@ import {
   useEffect,
   ReactNode,
 } from "react"
+import { DEFAULT_SITE_TITLE } from "@/lib/seo"
 import es from "./locales/es.json"
 import en from "./locales/en.json"
 
@@ -75,7 +76,15 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   )
 
   useEffect(() => {
-    if (hydrated) {
+    if (!hydrated) return
+    // Translate the app's default title only. A page that sets its own title
+    // (the legal pages, for instance) keeps it instead of being overwritten.
+    const appTitles = [
+      DEFAULT_SITE_TITLE,
+      translations.es.meta.title,
+      translations.en.meta.title,
+    ]
+    if (appTitles.includes(document.title)) {
       document.title = t("meta.title")
     }
   }, [t, hydrated])

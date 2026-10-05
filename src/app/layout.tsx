@@ -2,7 +2,13 @@ import type { Metadata, Viewport } from "next"
 import { Inter, Cormorant_Garamond } from "next/font/google"
 import "./globals.css"
 import Providers from "@/components/providers"
-import { DEFAULT_SITE_DESCRIPTION, DEFAULT_SITE_TITLE, getSiteUrl } from "@/lib/seo"
+import { JsonLd } from "@/components/json-ld"
+import { siteJsonLd } from "@/lib/json-ld"
+import {
+  DEFAULT_SITE_DESCRIPTION,
+  DEFAULT_SITE_TITLE,
+  getSiteUrl,
+} from "@/lib/seo"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -87,6 +93,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${inter.variable} ${cormorant.variable}`}>
       <body className={inter.className}>
+        <JsonLd data={siteJsonLd(getSiteUrl().origin)} />
         <Providers>{children}</Providers>
       </body>
     </html>

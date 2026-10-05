@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { useTranslation } from "@/lib/i18n"
 
 /**
@@ -69,6 +70,25 @@ function ConsentBody({
           </ul>
           <p className="mb-4 text-xs leading-relaxed text-[#6B6B6B]">
             {t("tryon.consent.review")}
+          </p>
+          <p className="mb-4 text-xs text-[#6B6B6B]">
+            {t("tryon.consent.links.prefix")}{" "}
+            <Link
+              href="/terminos"
+              target="_blank"
+              className="underline underline-offset-4 hover:text-[#1A1A1A]"
+            >
+              {t("tryon.consent.links.terms")}
+            </Link>{" "}
+            {t("tryon.consent.links.and")}{" "}
+            <Link
+              href="/seguridad"
+              target="_blank"
+              className="underline underline-offset-4 hover:text-[#1A1A1A]"
+            >
+              {t("tryon.consent.links.security")}
+            </Link>
+            .
           </p>
           <label className="flex cursor-pointer items-start gap-3 text-sm">
             <input
