@@ -433,7 +433,9 @@
       "cancelled": "Suscripción cancelada.",
       "confirming": "Estamos confirmando tu pago…",
       "unavailable": "Los pagos aún no están disponibles.",
-      "changeHint": "Para cambiar de plan, cancela el actual y elige otro cuando termine tu mes pagado."
+      "changeHint": "Para cambiar de plan, cancela el actual y elige otro cuando termine tu mes pagado.",
+      "notice": "Para subir prendas y generar looks necesitas un plan.",
+      "noticeCta": "Ver planes"
     }
   },
   "pricing": {

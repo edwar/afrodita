@@ -433,7 +433,9 @@
       "cancelled": "Subscription cancelled.",
       "confirming": "We are confirming your payment…",
       "unavailable": "Payments are not available yet.",
-      "changeHint": "To switch plans, cancel the current one and choose another when your paid month ends."
+      "changeHint": "To switch plans, cancel the current one and choose another when your paid month ends.",
+      "notice": "You need a plan to add garments and generate looks.",
+      "noticeCta": "See plans"
     }
   },
   "pricing": {

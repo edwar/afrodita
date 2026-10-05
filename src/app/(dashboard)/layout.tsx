@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { getServerSession } from "@/lib/auth-session"
 import { AppNavbar } from "@/components/layout/app-navbar"
+import { PlanNotice } from "@/components/billing/plan-notice"
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -21,6 +22,7 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-[#F8F5F0] text-[#1A1A1A]">
       <AppNavbar />
+      <PlanNotice />
       {children}
     </div>
   )
