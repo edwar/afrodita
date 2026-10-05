@@ -1,7 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 import {
+  SERVICE_UNAVAILABLE,
   TryOnError,
   buildTryOnRequest,
+  classifyGeminiFailure,
   closestAspectRatio,
   extractImage,
   generateTryOnImage,
@@ -143,5 +145,63 @@ describe("generateTryOnImage", () => {
     expect(url).toContain("/models/some-image-model:generateContent")
     expect(url).not.toContain("real-key")
     expect(init.headers["x-goog-api-key"]).toBe("real-key")
+  })
+})
+
+describe("classifyGeminiFailure", () => {
+  it("recognizes a depleted prepaid balance", () => {
+    const message =
+      "Your prepayment credits are depleted. Please go to AI Studio to manage your project and billing."
+    expect(classifyGeminiFailure(429, message)).toBe("out_of_credit")
+    expect(classifyGeminiFailure(403, "Billing account is not active")).toBe("out_of_credit")
+    expect(classifyGeminiFailure(402, "Insufficient funds")).toBe("out_of_credit")
+  })
+
+  it("keeps an ordinary rate limit apart from running out of credit", () => {
+    expect(classifyGeminiFailure(429, "Quota exceeded for requests per minute")).toBe("rate_limit")
+    expect(classifyGeminiFailure(429, "quota")).toBe("rate_limit")
+  })
+
+  it("keeps the free-tier case and the key case", () => {
+    expect(
+      classifyGeminiFailure(429, "Quota exceeded for metric free_tier_requests, limit: 0")
+    ).toBe("free_tier")
+    expect(classifyGeminiFailure(401, "")).toBe("bad_key")
+    expect(classifyGeminiFailure(400, "API key not valid")).toBe("bad_key")
+    expect(classifyGeminiFailure(500, "internal")).toBe("other")
+  })
+})
+
+describe("generateTryOnImage when the problem is ours", () => {
+  const failWith = (status: number, message: string) =>
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify({ error: { message } }), { status }))
+    )
+
+  it("shows customers a neutral 503 and marks the logs when the credit runs out", async () => {
+    vi.stubEnv("GEMINI_API_KEY", "real-key")
+    const log = vi.spyOn(console, "error").mockImplementation(() => {})
+    failWith(429, "Your prepayment credits are depleted.")
+
+    const error = await generateTryOnImage(person, [shirt]).catch((e) => e)
+    expect(error).toBeInstanceOf(TryOnError)
+    expect(error.status).toBe(503)
+    expect(error.message).toBe(SERVICE_UNAVAILABLE)
+    expect(log.mock.calls.flat().join(" ")).toContain("GEMINI_SIN_CREDITO")
+    log.mockRestore()
+  })
+
+  it("does not tell customers about the API key when it is invalid", async () => {
+    vi.stubEnv("GEMINI_API_KEY", "real-key")
+    const log = vi.spyOn(console, "error").mockImplementation(() => {})
+    failWith(403, "Permission denied")
+
+    const error = await generateTryOnImage(person, [shirt]).catch((e) => e)
+    expect(error.status).toBe(503)
+    expect(error.message).toBe(SERVICE_UNAVAILABLE)
+    expect(error.message).not.toMatch(/API_KEY/)
+    expect(log.mock.calls.flat().join(" ")).toContain("GEMINI_CLAVE_INVALIDA")
+    log.mockRestore()
   })
 })

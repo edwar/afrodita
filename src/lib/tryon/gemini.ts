@@ -193,6 +193,30 @@ export function extractImage(response: GeminiResponse): TryOnImage {
   throw new TryOnError("El modelo no devolvió ninguna imagen. Intenta de nuevo.", 502)
 }
 
+/**
+ * What a failed Gemini call means. "Out of credit" is the one to watch: with
+ * prepaid billing the API stops answering when the credit hits zero, and
+ * customers should see a calm message while the owner sees it in the logs.
+ */
+export type GeminiFailure = "free_tier" | "out_of_credit" | "rate_limit" | "bad_key" | "other"
+
+const OUT_OF_CREDIT =
+  /prepay|credits?\s+(?:are\s+)?(?:depleted|exhausted|insufficient)|(?:depleted|exhausted)\s+credits?|insufficient\s+(?:funds|credits?)|billing\s+(?:account|is)|spend(?:ing)?\s+cap/i
+
+export function classifyGeminiFailure(status: number, message = ""): GeminiFailure {
+  if (status === 429 && /free_tier/i.test(message) && /limit:\s*0\b/.test(message)) {
+    // The free plan simply has no quota for image models: not a used-up quota
+    return "free_tier"
+  }
+  if ([402, 403, 429].includes(status) && OUT_OF_CREDIT.test(message)) return "out_of_credit"
+  if (status === 429) return "rate_limit"
+  if (status === 401 || status === 403 || /API key/i.test(message)) return "bad_key"
+  return "other"
+}
+
+/** What the customer reads when the problem is ours, not theirs. Short: it goes in a toast. */
+export const SERVICE_UNAVAILABLE = "Servicio no disponible ahora. Inténtalo luego."
+
 export async function generateTryOnImage(
   person: TryOnImage,
   garments: TryOnGarmentInput[],
@@ -213,33 +237,29 @@ export async function generateTryOnImage(
 
   const data = (await response.json().catch(() => ({}))) as GeminiResponse
   if (!response.ok) {
-    console.error(`[tryon] Gemini ${response.status}:`, data.error?.message)
-    if (response.status === 429) {
-      // "limit: 0" on a free_tier metric is not a used-up quota: the free
-      // plan simply has none for image models.
-      const message = data.error?.message ?? ""
-      if (/free_tier/i.test(message) && /limit:\s*0\b/.test(message)) {
+    const reason = data.error?.message
+    console.error(`[tryon] Gemini ${response.status}:`, reason)
+    switch (classifyGeminiFailure(response.status, reason)) {
+      case "free_tier":
         throw new TryOnError(
           "El plan gratuito de Gemini no incluye generación de imágenes. Activa la facturación del proyecto en Google AI Studio.",
           402
         )
-      }
-      throw new TryOnError(
-        "Se alcanzó el límite de uso de Gemini para generar imágenes. Intenta de nuevo más tarde.",
-        429
-      )
+      case "out_of_credit":
+        // Greppable in the Vercel logs; the customer only sees a neutral message
+        console.error("[tryon] GEMINI_SIN_CREDITO: recarga los créditos en Google AI Studio")
+        throw new TryOnError(SERVICE_UNAVAILABLE, 503)
+      case "rate_limit":
+        throw new TryOnError(
+          "Se alcanzó el límite de uso de Gemini para generar imágenes. Intenta de nuevo más tarde.",
+          429
+        )
+      case "bad_key":
+        console.error("[tryon] GEMINI_CLAVE_INVALIDA: revisa GEMINI_API_KEY y su acceso al modelo de imagen")
+        throw new TryOnError(SERVICE_UNAVAILABLE, 503)
+      default:
+        throw new TryOnError("Gemini no pudo generar la imagen. Intenta de nuevo.", 502)
     }
-    const badKey =
-      response.status === 401 ||
-      response.status === 403 ||
-      /API key/i.test(data.error?.message ?? "")
-    if (badKey) {
-      throw new TryOnError(
-        "La GEMINI_API_KEY no es válida o no tiene acceso al modelo de imagen.",
-        503
-      )
-    }
-    throw new TryOnError("Gemini no pudo generar la imagen. Intenta de nuevo.", 502)
   }
   return extractImage(data)
 }
